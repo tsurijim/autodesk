@@ -23,8 +23,19 @@ let pool = null;
  */
 export async function initializeDatabase() {
   try {
+              // Parse DB_HOST to handle both "host" and "host:port" formats
+              let dbHost = process.env.DB_HOST || 'localhost';
+              let dbPort = process.env.DB_PORT || 3306;
+
+              // If DB_HOST contains a colon, split it into host and port
+              if (dbHost.includes(':')) {
+                            const parts = dbHost.split(':');
+                            dbHost = parts[0];
+                            dbPort = parseInt(parts[1], 10) || 3306;
+              }
     const dbConfig = {
-      host: process.env.DB_HOST || 'localhost',
+      host: dbHost,
+                  port: dbPort,
       user: process.env.DB_USER || 'root',
       password: process.env.DB_PASSWORD || '',
       database: process.env.DB_NAME || 'autodesk_diagnosis',
