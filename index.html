@@ -1,1 +1,429 @@
-404: Not Found
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Diagnóstico Autodesk - IDI Method</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h2 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Diagnóstico Autodesk</h1>
+            <p>Plataforma de Diagnóstico IDI Method</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="alert" id="alert"></div>
+            
+            <form id="diagnosisForm">
+                <!-- Client Information -->
+                <div class="form-section">
+                    <h2>📋 Información del Cliente</h2>
+                    
+                    <div class="form-group">
+                        <label for="clientName">Nombre del Cliente *</label>
+                        <input type="text" id="clientName" name="clientName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="companyName">Empresa *</label>
+                        <input type="text" id="companyName" name="companyName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="industry">Industria</label>
+                        <select id="industry" name="industry">
+                            <option value="">Seleccionar...</option>
+                            <option value="Construcción">Construcción</option>
+                            <option value="Manufactura">Manufactura</option>
+                            <option value="Infraestructura">Infraestructura</option>
+                            <option value="Educación">Educación</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Rol/Posición</label>
+                        <input type="text" id="role" name="role" placeholder="Ej: Gerente de Proyectos">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientEmail">Email</label>
+                        <input type="email" id="clientEmail" name="clientEmail">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="clientPhone">Teléfono</label>
+                        <input type="tel" id="clientPhone" name="clientPhone">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="country">País</label>
+                        <select id="country" name="country">
+                            <option value="">Seleccionar...</option>
+                            <option value="México">México</option>
+                            <option value="USA">USA</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Products Selection -->
+                <div class="form-section">
+                    <h2>📦 Productos Autodesk</h2>
+                    <div class="checkbox-group" id="productsGroup">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="revit" name="products" value="Revit">
+                            <label for="revit">Revit (BIM)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="autocad" name="products" value="AutoCAD">
+                            <label for="autocad">AutoCAD</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="navisworks" name="products" value="Navisworks">
+                            <label for="navisworks">Navisworks</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fusion" name="products" value="Fusion 360">
+                            <label for="fusion">Fusion 360</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="inventor" name="products" value="Inventor">
+                            <label for="inventor">Inventor</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="construction" name="products" value="Construction Cloud">
+                            <label for="construction">Construction Cloud</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Challenges Selection -->
+                <div class="form-section">
+                    <h2>⚠️ Desafíos Empresariales</h2>
+                    <div class="checkbox-group" id="challengesGroup">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="efficiency" name="challenges" value="Eficiencia">
+                            <label for="efficiency">Eficiencia Operacional</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="collaboration" name="challenges" value="Colaboración">
+                            <label for="collaboration">Colaboración en Equipo</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cost" name="challenges" value="Costo">
+                            <label for="cost">Control de Costos</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="quality" name="challenges" value="Calidad">
+                            <label for="quality">Aseguramiento de Calidad</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="schedule" name="challenges" value="Cronograma">
+                            <label for="schedule">Control de Cronograma</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="compliance" name="challenges" value="Cumplimiento">
+                            <label for="compliance">Cumplimiento Normativo</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button type="submit" class="btn-submit">Generar Diagnóstico</button>
+                    <button type="reset" class="btn-reset">Limpiar Formulario</button>
+                </div>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Generando diagnóstico...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('diagnosisForm');
+        const alert = document.getElementById('alert');
+        const loading = document.getElementById('loading');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validate required fields
+            const clientName = document.getElementById('clientName').value;
+            const companyName = document.getElementById('companyName').value;
+            
+            if (!clientName || !companyName) {
+                showAlert('Por favor completa los campos requeridos', 'error');
+                return;
+            }
+            
+            // Get selected products
+            const products = Array.from(document.querySelectorAll('input[name="products"]:checked'))
+                .map(cb => cb.value);
+            
+            if (products.length === 0) {
+                showAlert('Por favor selecciona al menos un producto', 'error');
+                return;
+            }
+            
+            // Get selected challenges
+            const challenges = Array.from(document.querySelectorAll('input[name="challenges"]:checked'))
+                .map(cb => cb.value);
+            
+            if (challenges.length === 0) {
+                showAlert('Por favor selecciona al menos un desafío', 'error');
+                return;
+            }
+            
+            // Prepare data
+            const data = {
+                clientName,
+                companyName,
+                industry: document.getElementById('industry').value || 'Desconocida',
+                role: document.getElementById('role').value || 'Desconocida',
+                clientEmail: document.getElementById('clientEmail').value,
+                clientPhone: document.getElementById('clientPhone').value,
+                country: document.getElementById('country').value || 'Desconocida',
+                products,
+                challenges
+            };
+            
+            // Show loading
+            loading.style.display = 'block';
+            form.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/diagnosis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showAlert(`✅ Diagnóstico generado exitosamente. ID: ${result.diagnosisId}`, 'success');
+                    form.reset();
+                    setTimeout(() => {
+                        form.style.display = 'block';
+                        loading.style.display = 'none';
+                    }, 3000);
+                } else {
+                    showAlert(`Error: ${result.error}`, 'error');
+                    form.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            } catch (error) {
+                showAlert(`Error de conexión: ${error.message}`, 'error');
+                form.style.display = 'block';
+                loading.style.display = 'none';
+            }
+        });
+        
+        function showAlert(message, type) {
+            alert.textContent = message;
+            alert.className = `alert ${type}`;
+            alert.style.display = 'block';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
