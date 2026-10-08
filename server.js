@@ -7,6 +7,7 @@ import {
   initializeDatabase,
   createClient,
   saveDiagnosis,
+  saveLifecycleDiagnosis,
   getDiagnosis,
   listDiagnoses,
   closeDatabase
@@ -323,6 +324,59 @@ app.get('/api/challenges', (req, res) => {
       error: 'Error retrieving challenges',
       message: error.message
     });
+  }
+});
+
+// =====================================================
+// DIAGNÓSTICO POR CICLO DE VIDA (6 fases)
+// =====================================================
+const LIFECYCLE_PHASES = ['pre-project', 'design', 'execution', 'post-project', 'priorities'];
+const OPTION_KEY = /^[a-z0-9-]{1,80}$/;
+
+app.post('/api/lifecycle-diagnoses', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const org = body.organization || {};
+    const name = typeof org.name === 'string' ? org.name.trim().slice(0, 255) : '';
+    if (!name) {
+      return res.status(400).json({ error: 'Falta el nombre de la organización', code: 'INVALID_INPUT' });
+    }
+
+    const phases = {};
+    for (const phase of LIFECYCLE_PHASES) {
+      const list = Array.isArray(body.phases && body.phases[phase]) ? body.phases[phase] : [];
+      phases[phase] = [...new Set(list.filter(v => typeof v === 'string' && OPTION_KEY.test(v)))];
+    }
+
+    // Madurez y ROI se recalculan aquí; no se confía en los valores del navegador.
+    const totalChecks = ['pre-project', 'design', 'execution', 'post-project']
+      .reduce((sum, p) => sum + phases[p].length, 0);
+    const maturityScore = Math.round((totalChecks / 16) * 100);
+    const priorities = phases['priorities'].length;
+    const roiPotential = Math.round((8000 + priorities * 2000) * (maturityScore / 100));
+
+    const data = {
+      organization: {
+        name,
+        industry: typeof org.industry === 'string' ? org.industry.slice(0, 100) : null,
+        size: typeof org.size === 'string' ? org.size.slice(0, 50) : null,
+        contact: typeof org.contact === 'string' ? org.contact.slice(0, 255) : null
+      },
+      phases,
+      totalChecks,
+      maturityScore,
+      roiPotential
+    };
+
+    const diagnosisId = await saveLifecycleDiagnosis(data);
+    console.log('[LIFECYCLE] Diagnóstico guardado, id:', diagnosisId);
+    res.status(201).json({ success: true, diagnosisId, maturityScore, roiPotential });
+  } catch (error) {
+    console.error('[LIFECYCLE_ERROR]', error.message);
+    if (error.message && error.message.includes('pool')) {
+      return res.status(503).json({ error: 'Base de datos no disponible', code: 'DB_UNAVAILABLE' });
+    }
+    res.status(500).json({ error: 'No se pudo guardar el diagnóstico', code: 'SAVE_FAILED' });
   }
 });
 

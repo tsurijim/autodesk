@@ -493,6 +493,50 @@ export async function closeDatabase() {
   }
 }
 
+/**
+ * Guardar diagnóstico por ciclo de vida (6 fases) en una transacción.
+ * data: { organization, phases, totalChecks, maturityScore, roiPotential }
+ */
+export async function saveLifecycleDiagnosis(data) {
+  const conn = await getConnection();
+  try {
+    await conn.beginTransaction();
+    const [res] = await conn.query(
+      `INSERT INTO lifecycle_diagnoses
+        (organization_name, industry, org_size, contact_email, total_checks, maturity_score, roi_potential, payload)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        data.organization.name,
+        data.organization.industry,
+        data.organization.size,
+        data.organization.contact,
+        data.totalChecks,
+        data.maturityScore,
+        data.roiPotential,
+        JSON.stringify(data)
+      ]
+    );
+    const diagnosisId = res.insertId;
+    const rows = [];
+    for (const [phase, options] of Object.entries(data.phases)) {
+      for (const option of options) rows.push([diagnosisId, phase, option]);
+    }
+    if (rows.length > 0) {
+      await conn.query(
+        'INSERT INTO lifecycle_answers (diagnosis_id, phase_key, option_key) VALUES ?',
+        [rows]
+      );
+    }
+    await conn.commit();
+    return diagnosisId;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
+}
+
 export default {
   initializeDatabase,
   createClient,
@@ -506,5 +550,6 @@ export default {
   getCommonChallenges,
   getMostUsedProducts,
   getDiagnosesByPeriod,
+  saveLifecycleDiagnosis,
   closeDatabase
 };

@@ -1388,6 +1388,51 @@ function generateExecutiveSummary(org, score, roi) {
   document.getElementById('executive-summary').textContent = text;
 }
 
+// ----- Guardado de respuestas por fase -----
+function collectLifecyclePayload() {
+  const checked = function (name) {
+    return Array.from(document.querySelectorAll('input[name="' + name + '"]:checked')).map(function (i) { return i.value; });
+  };
+  const val = function (id) {
+    const el = document.getElementById(id);
+    return el ? (el.value || '').trim() : '';
+  };
+  return {
+    organization: {
+      name: val('org-name'),
+      industry: val('industry') || null,
+      size: val('org-size') || null,
+      contact: val('contact') || null
+    },
+    phases: {
+      'pre-project': checked('pre-project'),
+      'design': checked('design'),
+      'execution': checked('execution'),
+      'post-project': checked('post-project'),
+      'priorities': checked('priorities')
+    }
+  };
+}
+
+async function saveLifecycleToServer() {
+  const payload = collectLifecyclePayload();
+  if (!payload.organization.name) {
+    return { saved: false, reason: 'falta el nombre de la organización' };
+  }
+  try {
+    const r = await fetch('/api/lifecycle-diagnoses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await r.json().catch(function () { return {}; });
+    if (r.ok && data.success) return { saved: true, id: data.diagnosisId };
+    return { saved: false, reason: data.error || ('error ' + r.status) };
+  } catch (e) {
+    return { saved: false, reason: 'sin conexión con el servidor' };
+  }
+}
+
 function generatePDF() {
   // Disable button to prevent multiple clicks
   const btn = event.target;
@@ -1399,6 +1444,15 @@ function generatePDF() {
   statusDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 10000; text-align: center; font-family: Arial, sans-serif;';
   statusDiv.innerHTML = '<p style="margin: 0; font-size: 16px; font-weight: bold; color: #333;">📄 Generando PDF...</p>';
   document.body.appendChild(statusDiv);
+
+  // Guardar respuestas en la base de datos (no bloquea el PDF)
+  saveLifecycleToServer().then(function (res) {
+    if (res.saved) {
+      statusDiv.innerHTML += '<p style="margin: 8px 0 0; font-size: 13px; color: #2e7d32;">Diagnóstico guardado (ID ' + res.id + ')</p>';
+    } else {
+      statusDiv.innerHTML += '<p style="margin: 8px 0 0; font-size: 13px; color: #c62828;">No se pudo guardar: ' + res.reason + '</p>';
+    }
+  });
   
   setTimeout(() => {
     try {
