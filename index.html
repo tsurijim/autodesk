@@ -1,503 +1,1497 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Diagnóstico Autodesk - IDI Method</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        .form-container {
-            padding: 40px;
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-        }
-        
-        .form-section h2 {
-            color: #333;
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 10px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: 500;
-        }
-        
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-            font-family: inherit;
-        }
-        
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
-        }
-        
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-        }
-        
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-        
-        .checkbox-item label {
-            margin: 0;
-            font-weight: normal;
-            cursor: pointer;
-            flex: 1;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-reset {
-            background: #f0f0f0;
-            color: #333;
-        }
-        
-        .btn-reset:hover {
-            background: #e0e0e0;
-        }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        
-        .alert.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-        
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma de Diagnóstico Autodesk - Ciclo de Vida</title>
+  <style>
+    /* Autodesk Official Brand Colors */
+    :root {
+      --autodesk-black: #000000;
+      --autodesk-white: #ffffff;
+      --hello-yellow: #ffff00;
+      --warm-slate: #d5d5cb;
+      --slate: #666666;
+      --dawn: #f09d4f;
+      --dusk: #f2520a;
+      --twilight: #1d91d0;
+      --morning: #2ad0a9;
+      --gray-900: #1a1a1a;
+      --gray-700: #333333;
+      --gray-600: #666666;
+      --gray-400: #999999;
+      --gray-200: #e0e0e0;
+      --gray-100: #f5f5f5;
+      --success: #107c10;
+      --warning: #ffc61e;
+      --critical: #e81123;
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --gray-900: #f0f0f0;
+        --gray-700: #e0e0e0;
+        --gray-600: #b0b0b0;
+        --gray-400: #888888;
+        --gray-200: #333333;
+        --gray-100: #1e1e1e;
+        --warm-slate: #4a4a42;
+        color-scheme: dark;
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Artifakt", Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      background: var(--autodesk-white);
+      color: var(--autodesk-black);
+      line-height: 1.6;
+    }
+
+    /* ENCABEZADO PROFESIONAL */
+    header {
+      background: var(--autodesk-white);
+      color: var(--autodesk-black);
+      padding: 40px 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+
+    .header-text h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .header-text p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 16px;
+    }
+
+    /* PROGRESO */
+    .progress-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 40px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      color: var(--gray-700);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .step.active .step-number {
+      background: var(--hello-yellow);
+      color: var(--autodesk-black);
+    }
+
+    .step.completed .step-number {
+      background: var(--success);
+      color: white;
+    }
+
+    .step-divider {
+      width: 20px;
+      height: 1px;
+      background: var(--gray-200);
+      margin: 0 4px;
+    }
+
+    /* SECCIONES */
+    .section {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+    }
+
+    .section-subtitle {
+      font-size: 15px;
+      color: var(--gray-600);
+      margin-bottom: 32px;
+    }
+
+    .phase-badge {
+      display: inline-block;
+      background: #f5f5f0;
+      color: var(--autodesk-black);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      border: 1px solid var(--warm-slate);
+    }
+
+    /* FORMULARIO */
+    .form-group {
+      margin-bottom: 28px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--gray-900);
+      background: var(--white);
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--autodesk-black);
+      box-shadow: 0 0 0 3px rgba(255, 255, 0, 0.2);
+    }
+
+    /* GRID DE CASILLAS */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--white);
+    }
+
+    .checkbox-item:hover {
+      border-color: var(--autodesk-black);
+      background: #f9f9f6;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      cursor: pointer;
+      accent-color: var(--autodesk-black);
+    }
+
+    .checkbox-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--gray-900);
+      cursor: pointer;
+      margin: 0;
+    }
+
+    /* BOTONES */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: var(--autodesk-black);
+      color: var(--autodesk-white);
+    }
+
+    .btn-primary:hover {
+      background: #333333;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:disabled {
+      background: var(--gray-400);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-900);
+      border: 1px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+    }
+
+    /* RESULTADOS */
+    .results-section {
+      margin-top: 40px;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .metric-card {
+      padding: 24px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: linear-gradient(135deg, #fafaf8 0%, var(--autodesk-white) 100%);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--autodesk-black);
+      margin: 0;
+    }
+
+    .metric-desc {
+      font-size: 13px;
+      color: var(--gray-600);
+      margin-top: 8px;
+    }
+
+    /* PERSPECTIVAS DE ROLES EXPERTOS */
+    .expert-perspectives {
+      margin-top: 48px;
+    }
+
+    .perspectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+
+    .perspective-card {
+      border: 2px solid var(--autodesk-black);
+      border-radius: 8px;
+      padding: 24px;
+      background: var(--autodesk-white);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .perspective-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .perspective-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f5f5f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .perspective-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--autodesk-black);
+      margin: 0;
+    }
+
+    .perspective-subtitle {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin: 4px 0 0 0;
+    }
+
+    .perspective-insight {
+      font-size: 14px;
+      color: var(--gray-700);
+      line-height: 1.6;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: #f9f9f6;
+      border-left: 3px solid var(--autodesk-black);
+      border-radius: 4px;
+    }
+
+    .perspective-actions {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .perspective-actions li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 13px;
+    }
+
+    .perspective-actions li:last-child {
+      border-bottom: none;
+    }
+
+    .perspective-actions li::before {
+      content: "→ ";
+      color: var(--autodesk-black);
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    /* RECOMENDACIONES */
+    .recommendations {
+      margin-top: 48px;
+    }
+
+    .rec-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 24px;
+    }
+
+    .recommendation-item {
+      padding: 20px;
+      border-left: 4px solid var(--autodesk-black);
+      background: #f9f9f6;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .rec-headline {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin: 0 0 8px 0;
+    }
+
+    .rec-description {
+      font-size: 13px;
+      color: var(--gray-600);
+      margin: 0 0 12px 0;
+      line-height: 1.5;
+    }
+
+    .rec-benefit {
+      font-size: 12px;
+      color: var(--success);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rec-benefit::before {
+      content: "✓";
+    }
+
+    /* PLAN DE IMPLEMENTACIÓN */
+    .implementation-plan {
+      margin-top: 48px;
+    }
+
+    .phases-timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .phase-card {
+      padding: 20px;
+      border: 1px solid var(--gray-200);
+      border-radius: 8px;
+      background: var(--white);
+      position: relative;
+    }
+
+    .phase-number {
+      position: absolute;
+      top: -12px;
+      left: 20px;
+      width: 28px;
+      height: 28px;
+      background: var(--autodesk-black);
+      color: var(--autodesk-white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .phase-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin: 12px 0 8px 0;
+      padding-top: 10px;
+    }
+
+    .phase-duration {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-bottom: 12px;
+    }
+
+    .phase-items {
+      font-size: 12px;
+      color: var(--gray-700);
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .phase-items li {
+      padding: 4px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .phase-items li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: var(--autodesk-black);
+    }
+
+    /* RESUMEN */
+    .summary-box {
+      background: linear-gradient(135deg, #fafaf8 0%, var(--autodesk-white) 100%);
+      border: 2px solid var(--autodesk-black);
+      border-radius: 8px;
+      padding: 32px;
+      margin: 48px 0;
+    }
+
+    .summary-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--autodesk-black);
+      margin: 0 0 16px 0;
+    }
+
+    .summary-text {
+      font-size: 14px;
+      color: var(--gray-900);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* DESCARGA DE REPORTE */
+    .download-section {
+      margin: 40px 0;
+      text-align: center;
+    }
+
+    .btn-download {
+      background: var(--success);
+      color: white;
+      padding: 14px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-download:hover {
+      background: #0d6e0f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 124, 16, 0.3);
+    }
+
+    /* RESPONSIVO */
+    @media (max-width: 600px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .section-title {
+        font-size: 20px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .checkbox-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .progress-indicator {
+        font-size: 12px;
+      }
+
+      .step-divider {
+        display: none;
+      }
+
+      .metric-value {
+        font-size: 28px;
+      }
+
+      .perspectives-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* IMPRESIÓN */
+    @media print {
+      body {
+        background: white;
+      }
+
+      button {
+        display: none;
+      }
+
+      .section {
+        page-break-inside: avoid;
+        display: block !important;
+      }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 Diagnóstico Autodesk</h1>
-            <p>Plataforma de Diagnóstico IDI Method</p>
-        </div>
-        
-        <div class="form-container">
-            <div class="alert" id="alert"></div>
-            
-            <form id="diagnosisForm">
-                <!-- Client Information -->
-                <div class="form-section">
-                    <h2>📋 Información del Cliente</h2>
-                    
-                    <div class="form-group">
-                        <label for="clientName">Nombre del Cliente *</label>
-                        <input type="text" id="clientName" name="clientName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="companyName">Empresa *</label>
-                        <input type="text" id="companyName" name="companyName" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="industry">Industria</label>
-                        <select id="industry" name="industry">
-                            <option value="">Seleccionar...</option>
-                            <option value="Construcción">Construcción</option>
-                            <option value="Manufactura">Manufactura</option>
-                            <option value="Infraestructura">Infraestructura</option>
-                            <option value="Educación">Educación</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="role">Rol/Posición</label>
-                        <input type="text" id="role" name="role" placeholder="Ej: Gerente de Proyectos">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="clientEmail">Email</label>
-                        <input type="email" id="clientEmail" name="clientEmail">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="clientPhone">Teléfono</label>
-                        <input type="tel" id="clientPhone" name="clientPhone">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="country">País</label>
-                        <select id="country" name="country">
-                            <option value="">Seleccionar...</option>
-                            <option value="México">México</option>
-                            <option value="USA">USA</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Products Selection -->
-                <div class="form-section">
-                    <h2>📦 Productos Autodesk</h2>
-                    <div class="checkbox-group" id="productsGroup">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="revit" name="products" value="Revit">
-                            <label for="revit">Revit (BIM)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="autocad" name="products" value="AutoCAD">
-                            <label for="autocad">AutoCAD</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="navisworks" name="products" value="Navisworks">
-                            <label for="navisworks">Navisworks</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="fusion" name="products" value="Fusion 360">
-                            <label for="fusion">Fusion 360</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="inventor" name="products" value="Inventor">
-                            <label for="inventor">Inventor</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="construction" name="products" value="Construction Cloud">
-                            <label for="construction">Construction Cloud</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Challenges Selection -->
-                <div class="form-section">
-                    <h2>⚠️ Desafíos Empresariales</h2>
-                    <div class="checkbox-group" id="challengesGroup">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="efficiency" name="challenges" value="Eficiencia">
-                            <label for="efficiency">Eficiencia Operacional</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="collaboration" name="challenges" value="Colaboración">
-                            <label for="collaboration">Colaboración en Equipo</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="cost" name="challenges" value="Costo">
-                            <label for="cost">Control de Costos</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="quality" name="challenges" value="Calidad">
-                            <label for="quality">Aseguramiento de Calidad</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="schedule" name="challenges" value="Cronograma">
-                            <label for="schedule">Control de Cronograma</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="compliance" name="challenges" value="Cumplimiento">
-                            <label for="compliance">Cumplimiento Normativo</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button type="submit" class="btn-submit">Generar Diagnóstico</button>
-                    <button type="reset" class="btn-reset">Limpiar Formulario</button>
-                </div>
-            </form>
-            
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Generando diagnóstico...</p>
-            </div>
 
-            <div class="button-group" id="pdfGroup" style="display:none">
-                <button type="button" class="btn-submit" id="btnPdf">📄 Descargar Reporte PDF</button>
-            </div>
+<header>
+  <div class="header-content">
+    <div class="logo-section">
+<img class="logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c2luZyBJSkcgSlBFRyB2ODApLCBxdWFsaXR5ID0gODIK/9sAQwAGBAQFBAQGBQUFBgYGBwkOCQkICAkSDQ0KDhUSFhYVEhQUFxohHBcYHxkUFB0nHR8iIyUlJRYcKSwoJCshJCUk/9sAQwEGBgYJCAkRCQkRJBgUGCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQk/8AAEQgBsQoAAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/aAAwDAQACEQMRAD8A+qaKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKTNQTahaW+fOuoIsdd8gX+dAFiis5vEejIcNq+nqfQ3KD+tJ/wkuif9BnTv8AwJT/ABoA0qKqR6vp0xxFf2kh/wBmZT/WrKsGGQQQe4oAdRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRSZpktzDCMyyxxj/aYCgCSiqMmvaTFnzNTs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FFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAQ3Vla3yeXdW0Nwn92VAw/I1h3fw68G3pP2jwrokhPUmyjBP6V0VFAHGy/Bv4eTNufwbopPT/j2UUz/AIUt8OQQR4M0X/wHFdrRQBy9v8LvA9q2YvCOhqc55s4z/MVtWOhaTpePsGl2Npjp5ECJj8hV6igAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKMUUUAFFFFADJYo5kMcsaSIeqsAQfwrIu/BXhi+JN14c0ecnvJZxsf5VtUUAclN8JvAc5YyeENEJYYP+iIP5Cq//Clfhz/0Jmi/+A4rtaKAOMj+DXw8ifcng3RQf+vZTV62+Gvgqzx5HhPQ0I6f6FGf5iulooAq2Wl2GnLiysba1HTEMSp/IVaoooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAzRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAJR2oooAWiiigAooooAKKKKACiiigANFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB//Z" alt="Autodesk" />
+      <div class="header-text">
+        <h1>Plataforma de Diagnóstico Autodesk</h1>
+        <p>Diagnóstico Estratégico por Ciclo de Vida Completo de Proyectos AEC</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Progreso -->
+  <div class="progress-indicator">
+    <div class="step active" id="progress-1">
+      <div class="step-number">1</div>
+      <span>Organización</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="progress-2">
+      <div class="step-number">2</div>
+      <span>Pre-Proyecto</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="progress-3">
+      <div class="step-number">3</div>
+      <span>Diseño</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="progress-4">
+      <div class="step-number">4</div>
+      <span>Precon/Ejecución</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="progress-5">
+      <div class="step-number">5</div>
+      <span>Post-Proyecto</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="progress-6">
+      <div class="step-number">6</div>
+      <span>Prioridades</span>
+    </div>
+    <div class="step-divider"></div>
+    <div class="step" id="progress-7">
+      <div class="step-number">7</div>
+      <span>Resultados</span>
+    </div>
+  </div>
+
+  <!-- Paso 1: Organización -->
+  <div class="section active" id="section-1">
+    <h2 class="section-title">Información de la Organización</h2>
+    <p class="section-subtitle">Cuéntanos sobre tu empresa para contextualizar el diagnóstico de ciclo de vida.</p>
+
+    <form id="form-1">
+      <div class="form-group">
+        <label for="org-name">Nombre de la Organización</label>
+        <input type="text" id="org-name" placeholder="Ingresa el nombre de la organización">
+      </div>
+
+      <div class="form-group">
+        <label for="industry">Sector de la Industria</label>
+        <select id="industry">
+          <option value="">Selecciona sector...</option>
+          <option value="commercial">Construcción Comercial</option>
+          <option value="residential">Desarrollo Residencial</option>
+          <option value="infrastructure">Infraestructura / Civil</option>
+          <option value="manufacturing">Manufactura / Ingeniería</option>
+          <option value="architecture">Arquitectura & Diseño</option>
+          <option value="engineering">Servicios de Ingeniería</option>
+          <option value="real-estate">Desarrollo Inmobiliario</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="org-size">Tamaño de la Organización</label>
+        <select id="org-size">
+          <option value="">Selecciona tamaño...</option>
+          <option value="small">Pequeña (1-50 empleados)</option>
+          <option value="medium">Mediana (51-250 empleados)</option>
+          <option value="large">Grande (251+ empleados)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="contact">Email del Contacto Principal</label>
+        <input type="email" id="contact" placeholder="contacto@organizacion.com">
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" disabled>← Anterior</button>
+        <button type="button" class="btn-primary" onclick="nextStep()">Siguiente →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 2: Pre-Proyecto -->
+  <div class="section" id="section-2">
+    <span class="phase-badge">Fase 1: PRE-PROYECTO</span>
+    <h2 class="section-title">Fase Pre-Proyecto & Estrategia</h2>
+    <p class="section-subtitle">Estrategia, planificación inicial y preparación de proyectos.</p>
+
+    <form id="form-2">
+      <div class="form-group">
+        <label>Planificación Estratégica & Análisis</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="feasibility-studies">
+            <span class="checkbox-label">Estudios de viabilidad documentados</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="stakeholder-engagement">
+            <span class="checkbox-label">Estrategia de stakeholders definida</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="digital-strategy">
+            <span class="checkbox-label">Estrategia digital/BIM alineada</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="risk-assessment">
+            <span class="checkbox-label">Evaluación de riesgos iniciales</span>
+          </label>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label>Precálculo & Estimación</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="cost-estimation">
+            <span class="checkbox-label">Estimación de costos parametrizada</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="budgeting-process">
+            <span class="checkbox-label">Proceso de presupuestación integrado</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="contingency-planning">
+            <span class="checkbox-label">Planificación de contingencias</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="baseline-schedule">
+            <span class="checkbox-label">Cronograma base establecido</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Governance & Autorización de Proyectos</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="approval-process">
+            <span class="checkbox-label">Proceso de aprobación formalizado</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="business-case">
+            <span class="checkbox-label">Business case documentado</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="success-criteria">
+            <span class="checkbox-label">Criterios de éxito definidos</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="pre-project" value="team-assignment">
+            <span class="checkbox-label">Asignación de equipo core</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
+        <button type="button" class="btn-primary" onclick="nextStep()">Siguiente →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 3: Diseño -->
+  <div class="section" id="section-3">
+    <span class="phase-badge">Fase 2: DISEÑO</span>
+    <h2 class="section-title">Fase de Diseño & Modelado</h2>
+    <p class="section-subtitle">Procesos de diseño, BIM, modelado 3D y coordinación multidisciplinaria.</p>
+
+    <form id="form-3">
+      <div class="form-group">
+        <label>Procesos BIM & Modelado 3D</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="bim-workflow">
+            <span class="checkbox-label">Flujo BIM estructurado (Revit/Navisworks)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="revit-advanced">
+            <span class="checkbox-label">Revit avanzado y familias personalizadas</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="parametric-design">
+            <span class="checkbox-label">Diseño paramétrico e iterativo</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="visualization">
+            <span class="checkbox-label">Visualización/renderizado integrado</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Coordinación Multidisciplinaria</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="clash-detection">
+            <span class="checkbox-label">Detección automática de conflictos (Navisworks)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="coordination-platform">
+            <span class="checkbox-label">Plataforma de coordinación en nube</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="design-review">
+            <span class="checkbox-label">Procesos de revisión/aprobación digital</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="trade-coordination">
+            <span class="checkbox-label">Coordinación especializada MEP</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Análisis de Diseño & Validación</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="energy-analysis">
+            <span class="checkbox-label">Análisis energético integrado</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="structural-validation">
+            <span class="checkbox-label">Validación estructural en diseño</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="cost-analysis">
+            <span class="checkbox-label">Análisis de costos en tiempo de diseño</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="design" value="lod-standards">
+            <span class="checkbox-label">Estándares LOD (Level of Detail)</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
+        <button type="button" class="btn-primary" onclick="nextStep()">Siguiente →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 4: Preconstrucción/Ejecución -->
+  <div class="section" id="section-4">
+    <span class="phase-badge">Fase 3: PRECONSTRUCCIÓN & EJECUCIÓN</span>
+    <h2 class="section-title">Preconstrucción & Ejecución de Proyectos</h2>
+    <p class="section-subtitle">Planificación de construcción, VDC, gestión de obra y campo.</p>
+
+    <form id="form-4">
+      <div class="form-group">
+        <label>VDC (Virtual Design & Construction)</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="vdc-planning">
+            <span class="checkbox-label">Planificación VDC integrada</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="4d-scheduling">
+            <span class="checkbox-label">Planificación 4D (3D + Tiempo)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="5d-estimating">
+            <span class="checkbox-label">Estimación 5D (3D + Tiempo + Costo)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="site-logistics">
+            <span class="checkbox-label">Análisis de logística en sitio</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Gestión de Obra & Programación</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="timeline-management">
+            <span class="checkbox-label">Gestión de cronogramas integrada</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="resource-planning">
+            <span class="checkbox-label">Planificación de recursos optimizada</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="progress-tracking">
+            <span class="checkbox-label">Seguimiento de avance en tiempo real</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="quality-control">
+            <span class="checkbox-label">Procesos de control de calidad</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Operaciones de Campo & Movilidad</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="mobile-apps">
+            <span class="checkbox-label">Aplicaciones móviles en obra</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="reality-capture">
+            <span class="checkbox-label">Captura de realidad (Drone/Photogrammetry)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="issue-management">
+            <span class="checkbox-label">Sistema de gestión de problemas digital</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="execution" value="safety-tracking">
+            <span class="checkbox-label">Seguimiento de seguridad y cumplimiento</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
+        <button type="button" class="btn-primary" onclick="nextStep()">Siguiente →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 5: Post-Proyecto -->
+  <div class="section" id="section-5">
+    <span class="phase-badge">Fase 4: POST-PROYECTO</span>
+    <h2 class="section-title">Post-Proyecto & Operaciones</h2>
+    <p class="section-subtitle">Cierre de proyecto, entrega de activos y operaciones del edificio.</p>
+
+    <form id="form-5">
+      <div class="form-group">
+        <label>Entrega de Proyecto (Handover)</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="as-built-documentation">
+            <span class="checkbox-label">Documentación As-Built automática</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="asset-handover">
+            <span class="checkbox-label">Entrega de activos estructurada</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="o-m-manuals">
+            <span class="checkbox-label">Manuales de Operación & Mantenimiento</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="defect-management">
+            <span class="checkbox-label">Gestión de defectos post-entrega</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Operaciones & Mantenimiento del Edificio</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="bim-operations">
+            <span class="checkbox-label">BIM para operaciones (FM integrado)</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="predictive-maintenance">
+            <span class="checkbox-label">Mantenimiento predictivo y análisis</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="energy-optimization">
+            <span class="checkbox-label">Optimización energética continua</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="occupant-experience">
+            <span class="checkbox-label">Plataforma de experiencia del ocupante</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Análisis de Proyecto & Lecciones Aprendidas</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="post-completion-review">
+            <span class="checkbox-label">Revisión post-conclusión formal</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="lessons-learned">
+            <span class="checkbox-label">Captura de lecciones aprendidas</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="performance-metrics">
+            <span class="checkbox-label">Métricas de desempeño del proyecto</span>
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="post-project" value="knowledge-management">
+            <span class="checkbox-label">Sistema de gestión del conocimiento</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
+        <button type="button" class="btn-primary" onclick="nextStep()">Siguiente →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 6: Prioridades -->
+  <div class="section" id="section-6">
+    <h2 class="section-title">Prioridades Estratégicas de Negocio</h2>
+    <p class="section-subtitle">¿Cuáles son tus principales desafíos en el ciclo de vida completo?</p>
+
+    <form id="form-6">
+      <div class="checkbox-grid">
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="cost-reduction">
+          <span class="checkbox-label">Reducción de costos operacionales</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="schedule-acceleration">
+          <span class="checkbox-label">Aceleración de cronogramas</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="quality-improvement">
+          <span class="checkbox-label">Mejora de calidad y estándares</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="talent-retention">
+          <span class="checkbox-label">Retención y desarrollo de talento</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="client-satisfaction">
+          <span class="checkbox-label">Satisfacción y experiencia del cliente</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="digital-transformation">
+          <span class="checkbox-label">Transformación digital acelerada</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="sustainability">
+          <span class="checkbox-label">Objetivos de sostenibilidad y ESG</span>
+        </label>
+        <label class="checkbox-item">
+          <input type="checkbox" name="priorities" value="competitive-advantage">
+          <span class="checkbox-label">Ventaja competitiva en el mercado</span>
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
+        <button type="button" class="btn-primary" onclick="generateResults()">Generar Diagnóstico →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Paso 7: Resultados -->
+  <div class="section" id="section-7">
+    <h2 class="section-title">Resultados del Diagnóstico por Ciclo de Vida</h2>
+    <p class="section-subtitle">Análisis completo del ciclo de vida de proyectos con perspectivas de expertos Autodesk.</p>
+
+    <!-- MÉTRICAS CLAVE -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Madurez General</div>
+        <div class="metric-value" id="maturity-score">0%</div>
+        <div class="metric-desc">Capacidad de procesos en ciclo completo</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Potencial de ROI Anual</div>
+        <div class="metric-value" id="roi-potential">$0K</div>
+        <div class="metric-desc">Impacto financiero estimado</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Oportunidades Identificadas</div>
+        <div class="metric-value" id="opportunities-count">0</div>
+        <div class="metric-desc">Recomendaciones prioritarias</div>
+      </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        const form = document.getElementById('diagnosisForm');
-        const alert = document.getElementById('alert');
-        const loading = document.getElementById('loading');
-        let lastDiagnosis = null;
+    <!-- PERSPECTIVAS DE ROLES EXPERTOS -->
+    <div class="expert-perspectives">
+      <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 24px; color: var(--gray-900);">
+        Perspectivas de Roles Expertos (Alineadas al Ciclo de Vida)
+      </h3>
+      <div class="perspectives-grid">
+        <!-- Director de Proyectos -->
+        <div class="perspective-card">
+          <div class="perspective-header">
+            <div class="perspective-icon">📊</div>
+            <div>
+              <h4 class="perspective-title">Director de Proyectos</h4>
+              <p class="perspective-subtitle">Ejecución & Control</p>
+            </div>
+          </div>
+          <div class="perspective-insight" id="pm-insight"></div>
+          <ul class="perspective-actions" id="pm-actions"></ul>
+        </div>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Validate required fields
-            const clientName = document.getElementById('clientName').value;
-            const companyName = document.getElementById('companyName').value;
-            
-            if (!clientName || !companyName) {
-                showAlert('Por favor completa los campos requeridos', 'error');
-                return;
+        <!-- Director Financiero -->
+        <div class="perspective-card">
+          <div class="perspective-header">
+            <div class="perspective-icon">💰</div>
+            <div>
+              <h4 class="perspective-title">Director Financiero</h4>
+              <p class="perspective-subtitle">ROI y Rentabilidad</p>
+            </div>
+          </div>
+          <div class="perspective-insight" id="cfo-insight"></div>
+          <ul class="perspective-actions" id="cfo-actions"></ul>
+        </div>
+
+        <!-- Jefe Técnico / Arquitecto -->
+        <div class="perspective-card">
+          <div class="perspective-header">
+            <div class="perspective-icon">🏗️</div>
+            <div>
+              <h4 class="perspective-title">Jefe Técnico/Diseño</h4>
+              <p class="perspective-subtitle">Calidad e Innovación</p>
+            </div>
+          </div>
+          <div class="perspective-insight" id="technical-insight"></div>
+          <ul class="perspective-actions" id="technical-actions"></ul>
+        </div>
+
+        <!-- Director de Operaciones -->
+        <div class="perspective-card">
+          <div class="perspective-header">
+            <div class="perspective-icon">⚙️</div>
+            <div>
+              <h4 class="perspective-title">Director de Operaciones</h4>
+              <p class="perspective-subtitle">Eficiencia Operacional</p>
+            </div>
+          </div>
+          <div class="perspective-insight" id="ops-insight"></div>
+          <ul class="perspective-actions" id="ops-actions"></ul>
+        </div>
+
+        <!-- Director General / C-Suite -->
+        <div class="perspective-card">
+          <div class="perspective-header">
+            <div class="perspective-icon">👔</div>
+            <div>
+              <h4 class="perspective-title">Director General</h4>
+              <p class="perspective-subtitle">Estrategia Corporativa</p>
+            </div>
+          </div>
+          <div class="perspective-insight" id="ceo-insight"></div>
+          <ul class="perspective-actions" id="ceo-actions"></ul>
+        </div>
+
+        <!-- Líder de Transformación Digital -->
+        <div class="perspective-card">
+          <div class="perspective-header">
+            <div class="perspective-icon">🚀</div>
+            <div>
+              <h4 class="perspective-title">Líder Digital/Innovación</h4>
+              <p class="perspective-subtitle">Transformación Tecnológica</p>
+            </div>
+          </div>
+          <div class="perspective-insight" id="digital-insight"></div>
+          <ul class="perspective-actions" id="digital-actions"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECOMENDACIONES POR FASE -->
+    <div class="recommendations">
+      <h3 class="rec-title">Recomendaciones por Fase del Ciclo de Vida</h3>
+      <div id="recommendations-list"></div>
+    </div>
+
+    <!-- PLAN DE IMPLEMENTACIÓN -->
+    <div class="implementation-plan">
+      <h3 class="rec-title">Plan de Transformación (4 Fases)</h3>
+      <div class="phases-timeline" id="phases-list"></div>
+    </div>
+
+    <!-- RESUMEN EJECUTIVO -->
+    <div class="summary-box">
+      <h4 class="summary-title">Resumen Ejecutivo - Ciclo de Vida Completo</h4>
+      <p class="summary-text" id="executive-summary"></p>
+    </div>
+
+    <!-- DESCARGA DE REPORTE -->
+    <div class="download-section">
+      <button class="btn-download" onclick="generatePDF()">⬇️ Descargar Reporte Profesional (PDF)</button>
+      <p style="font-size: 12px; color: var(--gray-600); margin-top: 16px;">
+        El reporte incluye análisis por fase, perspectivas de expertos, recomendaciones y plan de implementación.
+      </p>
+    </div>
+
+    <div class="button-group">
+      <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
+      <button type="button" class="btn-secondary" onclick="resetForm()" style="background: var(--gray-100);">Nuevo Diagnóstico</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 7;
+
+function updateProgress() {
+  for (let i = 1; i <= totalSteps; i++) {
+    const step = document.getElementById(`progress-${i}`);
+    step.classList.remove('active', 'completed');
+    if (i < currentStep) {
+      step.classList.add('completed');
+    } else if (i === currentStep) {
+      step.classList.add('active');
+    }
+  }
+}
+
+function nextStep() {
+  if (currentStep < totalSteps) {
+    document.getElementById(`section-${currentStep}`).classList.remove('active');
+    currentStep++;
+    document.getElementById(`section-${currentStep}`).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function previousStep() {
+  if (currentStep > 1) {
+    document.getElementById(`section-${currentStep}`).classList.remove('active');
+    currentStep--;
+    document.getElementById(`section-${currentStep}`).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function generateResults() {
+  nextStep();
+
+  const orgName = document.getElementById('org-name').value || 'Organización';
+  const preProject = Array.from(document.querySelectorAll('input[name="pre-project"]:checked')).length;
+  const design = Array.from(document.querySelectorAll('input[name="design"]:checked')).length;
+  const execution = Array.from(document.querySelectorAll('input[name="execution"]:checked')).length;
+  const postProject = Array.from(document.querySelectorAll('input[name="post-project"]:checked')).length;
+  const totalChecks = preProject + design + execution + postProject;
+  const maturityScore = Math.round((totalChecks / 16) * 100);
+
+  const priorities = Array.from(document.querySelectorAll('input[name="priorities"]:checked')).length;
+  const roiPotential = (8000 + (priorities * 2000)) * (maturityScore / 100);
+
+  document.getElementById('maturity-score').textContent = maturityScore + '%';
+  document.getElementById('roi-potential').textContent = '$' + Math.round(roiPotential / 1000) + 'K';
+  document.getElementById('opportunities-count').textContent = Math.max(3, priorities);
+
+  generatePerspectives(orgName, maturityScore, preProject, design, execution, postProject, priorities);
+  generateRecommendations(preProject, design, execution, postProject);
+  generatePhases();
+  generateExecutiveSummary(orgName, maturityScore, roiPotential);
+}
+
+function generatePerspectives(orgName, score, pre, des, exe, post, priorities) {
+  document.getElementById('pm-insight').textContent = exe < 6 ? 'Necesitas mejorar VDC y tracking en obra.' : 'Buena ejecución. Optimiza predictividad.';
+  document.getElementById('pm-actions').innerHTML = '<li>Implementar VDC completo</li><li>Integrar apps móviles en obra</li>';
+
+  document.getElementById('cfo-insight').textContent = score < 50 ? 'ROI potencial 12-18% con implementación.' : 'Buena estructura. Potencial en automatización.';
+  document.getElementById('cfo-actions').innerHTML = '<li>Presupuestación 5D integrada</li><li>Dashboards de rentabilidad</li>';
+
+  document.getElementById('technical-insight').textContent = des < 6 ? 'Requiere implementación de estándares BIM.' : 'Buena base BIM. Avanza a coordinación multidisciplinaria.';
+  document.getElementById('technical-actions').innerHTML = '<li>Estándares BIM y LOD estructurados</li><li>Coordinación automática Navisworks</li>';
+
+  document.getElementById('ops-insight').textContent = (exe + post) < 10 ? 'Automatización 25-35% de horas operativas.' : 'Buena automatización. Optimiza integraciones.';
+  document.getElementById('ops-actions').innerHTML = '<li>Mapear procesos repetitivos</li><li>Integraciones API</li>';
+
+  document.getElementById('ceo-insight').textContent = score < 60 ? 'Transformación digital necesaria para competitividad.' : 'Sólida base. Enfócate en escalabilidad.';
+  document.getElementById('ceo-actions').innerHTML = '<li>Alinear roadmap digital 3-5 años</li><li>Centro de Excelencia</li>';
+
+  document.getElementById('digital-insight').textContent = 'Liderazgo digital en sector AEC con soluciones Autodesk.';
+  document.getElementById('digital-actions').innerHTML = '<li>Programa innovación abierta</li><li>Capacidades IA/ML predictivo</li>';
+}
+
+function generateRecommendations(pre, des, exe, post) {
+  const recs = [
+    { title: 'Modernizar Pre-Proyecto', phase: 'Pre-Proyecto', desc: 'BIM Planning y estimación 5D automática.' },
+    { title: 'Expandir BIM & Coordinación', phase: 'Diseño', desc: 'Coordinación multidisciplinaria con clash detection.' },
+    { title: 'Implementar VDC Completo', phase: 'Precon/Ejecución', desc: '4D/5D integrada con captura de realidad.' },
+    { title: 'Integrar BIM en Operaciones', phase: 'Post-Proyecto', desc: 'As-Built a BIM operacional para FM.' }
+  ];
+
+  document.getElementById('recommendations-list').innerHTML = recs.map((r, i) => `
+    <div class="recommendation-item">
+      <h4 class="rec-headline">${r.phase} | ${i + 1}. ${r.title}</h4>
+      <p class="rec-description">${r.desc}</p>
+      <p class="rec-benefit">Impacto: +${Math.round(Math.random() * 5 + 3)}% eficiencia</p>
+    </div>
+  `).join('');
+}
+
+function generatePhases() {
+  const phases = [
+    { title: 'Diagnóstico & Planificación', duration: '2-3 semanas', items: ['Validar requisitos', 'Definir arquitectura', 'Asignar equipo'] },
+    { title: 'Implementación Piloto', duration: '8-12 semanas', items: ['Setup inicial', 'Migración datos', 'Capacitación', 'Validación'] },
+    { title: 'Escalamiento Completo', duration: '12-16 semanas', items: ['Rollout a todos proyectos', 'Integración fases', 'Soporte full', 'Optimización'] },
+    { title: 'Optimización Continua', duration: 'Permanente', items: ['Análisis impacto', 'Mejoras incrementales', 'IA/ML avanzado'] }
+  ];
+
+  document.getElementById('phases-list').innerHTML = phases.map((p, i) => `
+    <div class="phase-card">
+      <div class="phase-number">${i + 1}</div>
+      <h4 class="phase-title">${p.title}</h4>
+      <p class="phase-duration">⏱️ ${p.duration}</p>
+      <ul class="phase-items">${p.items.map(item => `<li>${item}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+}
+
+function generateExecutiveSummary(org, score, roi) {
+  const text = `Gracias por completar el diagnóstico, esto nos ayuda a identificar un plan de acción para todos los involucrados en el éxito de tus proyectos`;
+  document.getElementById('executive-summary').textContent = text;
+}
+
+function generatePDF() {
+  // Disable button to prevent multiple clicks
+  const btn = event.target;
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  
+  // Show status
+  const statusDiv = document.createElement('div');
+  statusDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 10000; text-align: center; font-family: Arial, sans-serif;';
+  statusDiv.innerHTML = '<p style="margin: 0; font-size: 16px; font-weight: bold; color: #333;">📄 Generando PDF...</p>';
+  document.body.appendChild(statusDiv);
+  
+  setTimeout(() => {
+    try {
+      // Get the container
+      const element = document.querySelector('.container');
+      if (!element) {
+        throw new Error('Contenido no encontrado');
+      }
+      
+      // Use html2canvas to capture the element
+      html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff'
+      }).then(canvas => {
+        try {
+          // Get image data
+          const imgData = canvas.toDataURL('image/png');
+          
+          // Create PDF using jsPDF
+          const { jsPDF } = window;
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+          });
+          
+          // Calculate dimensions
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const pageHeight = pdf.internal.pageSize.getHeight();
+          const imgWidth = pageWidth - 20; // 10mm margin on each side
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          let heightLeft = imgHeight;
+          let position = 0;
+          
+          // Add pages
+          while (heightLeft > 0) {
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            if (position !== 0) {
+              pdf.addPage();
             }
-            
-            // Get selected products
-            const products = Array.from(document.querySelectorAll('input[name="products"]:checked'))
-                .map(cb => cb.value);
-            
-            if (products.length === 0) {
-                showAlert('Por favor selecciona al menos un producto', 'error');
-                return;
-            }
-            
-            // Get selected challenges
-            const challenges = Array.from(document.querySelectorAll('input[name="challenges"]:checked'))
-                .map(cb => cb.value);
-            
-            if (challenges.length === 0) {
-                showAlert('Por favor selecciona al menos un desafío', 'error');
-                return;
-            }
-            
-            // Prepare data
-            const data = {
-                clientName,
-                companyName,
-                industry: document.getElementById('industry').value || 'Desconocida',
-                role: document.getElementById('role').value || 'Desconocida',
-                clientEmail: document.getElementById('clientEmail').value,
-                clientPhone: document.getElementById('clientPhone').value,
-                country: document.getElementById('country').value || 'Desconocida',
-                products,
-                challenges
-            };
-            
-            // Show loading
-            loading.style.display = 'block';
-            form.style.display = 'none';
-            
-            try {
-                const response = await fetch('/api/diagnosis', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    lastDiagnosis = result.diagnosis;
-                    showAlert(result.databaseStored
-                        ? `✅ Diagnóstico generado y guardado. ID: ${result.diagnosisId}`
-                        : '⚠️ Diagnóstico generado, pero NO se guardó en la base de datos.', result.databaseStored ? 'success' : 'error');
-                    document.getElementById('pdfGroup').style.display = 'flex';
-                    form.reset();
-                    setTimeout(() => {
-                        form.style.display = 'block';
-                        loading.style.display = 'none';
-                    }, 3000);
-                } else {
-                    showAlert(`Error: ${result.error}`, 'error');
-                    form.style.display = 'block';
-                    loading.style.display = 'none';
-                }
-            } catch (error) {
-                showAlert(`Error de conexión: ${error.message}`, 'error');
-                form.style.display = 'block';
-                loading.style.display = 'none';
-            }
-        });
-        
-        function showAlert(message, type) {
-            alert.textContent = message;
-            alert.className = `alert ${type}`;
-            alert.style.display = 'block';
-            
-            setTimeout(() => {
-                alert.style.display = 'none';
-            }, 5000);
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            position -= pageHeight;
+          }
+          
+          // Save PDF
+          const fileName = 'Diagnostico_Autodesk_' + new Date().toISOString().split('T')[0] + '.pdf';
+          pdf.save(fileName);
+          
+          // Remove status
+          statusDiv.remove();
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        } catch (err) {
+          console.error('Error PDF:', err);
+          statusDiv.innerHTML = '<p style="color: red; font-weight: bold;">Error: ' + err.message + '</p>';
+          setTimeout(() => statusDiv.remove(), 3000);
+          btn.disabled = false;
+          btn.style.opacity = '1';
         }
+      }).catch(err => {
+        console.error('Canvas error:', err);
+        statusDiv.innerHTML = '<p style="color: red; font-weight: bold;">Error: ' + err.message + '</p>';
+        setTimeout(() => statusDiv.remove(), 3000);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      statusDiv.innerHTML = '<p style="color: red; font-weight: bold;">Error: ' + error.message + '</p>';
+      setTimeout(() => statusDiv.remove(), 3000);
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+  }, 100);
+}
 
-        document.getElementById('btnPdf').addEventListener('click', () => {
-            if (!lastDiagnosis || !window.jspdf) {
-                showAlert('No hay diagnóstico para exportar o la librería PDF no cargó', 'error');
-                return;
-            }
-            generatePdf(lastDiagnosis);
-        });
+function resetForm() {
+  document.querySelectorAll('input, select').forEach(el => {
+    if (el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+  currentStep = 1;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active', 'completed'));
+  document.getElementById('section-1').classList.add('active');
+  document.getElementById('progress-1').classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
 
-        function generatePdf(d) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-            const margin = 15;
-            const width = doc.internal.pageSize.getWidth() - margin * 2;
-            let y = margin;
-
-            const write = (text, size = 10, bold = false, gap = 5) => {
-                doc.setFont('helvetica', bold ? 'bold' : 'normal');
-                doc.setFontSize(size);
-                const lines = doc.splitTextToSize(String(text), width);
-                lines.forEach(line => {
-                    if (y > 280) { doc.addPage(); y = margin; }
-                    doc.text(line, margin, y);
-                    y += size * 0.45 + 1.5;
-                });
-                y += gap - 5 + 2;
-            };
-
-            write('Reporte de Diagnóstico Autodesk - IDI Method', 16, true, 10);
-            write(`Cliente: ${d.client.name} | Empresa: ${d.client.company}`, 10);
-            write(`Industria: ${d.client.industry} | Rol: ${d.client.role} | País: ${d.client.country}`, 10);
-            write(`Fecha: ${new Date(d.generatedAt).toLocaleDateString('es-MX')}`, 10, false, 8);
-
-            write('1. Madurez', 13, true);
-            write(`Nivel: ${d.maturityAssessment.level} (${d.maturityAssessment.score}/100)`);
-            write(d.executiveSummary.summary, 10, false, 8);
-
-            write('2. Retorno de inversión (estimado, por validar)', 13, true);
-            write(`Costo de implementación estimado: USD ${d.roi.estimatedImplementationCost.toLocaleString('en-US')}`);
-            write(`Beneficio anual estimado: USD ${d.roi.estimatedAnnualROI.toLocaleString('en-US')}`);
-            write(`Periodo de recuperación: ${d.roi.paybackPeriod} meses | ROI: ${d.roi.roiPercentage}%`, 10, false, 8);
-
-            write('3. Productos evaluados', 13, true);
-            write(d.productNames.join(', '), 10, false, 8);
-
-            write('4. Desafíos prioritarios', 13, true);
-            write(d.challengeNames.join(', '), 10, false, 8);
-
-            write('5. Recomendaciones', 13, true);
-            d.recommendations.forEach(r => {
-                write(`${r.id} - ${r.challenge} (prioridad ${r.priority}, plazo ${r.timeline})`, 10, true, 3);
-                r.actions.forEach(a => write(`• ${a}`, 10, false, 3));
-            });
-            y += 4;
-
-            write('6. Plan de implementación', 13, true);
-            d.implementationPlan.phases.forEach(p => {
-                write(`${p.phase} (${p.duration})`, 10, true, 3);
-                p.activities.forEach(a => write(`• ${a}`, 10, false, 3));
-            });
-
-            const safe = (d.client.company || 'diagnostico').replace(/[^a-z0-9]+/gi, '_');
-            doc.save(`diagnostico_${safe}.pdf`);
-        }
-    </script>
 </body>
 </html>
