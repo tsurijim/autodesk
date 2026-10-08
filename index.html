@@ -1474,7 +1474,8 @@ function generatePDF() {
           const imgData = canvas.toDataURL('image/png');
           
           // Create PDF using jsPDF
-          const { jsPDF } = window;
+          const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+          if (!jsPDF) { throw new Error('La librería de PDF no cargó. Recarga la página con Ctrl+Shift+R.'); }
           const pdf = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
