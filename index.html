@@ -1467,11 +1467,17 @@ function generatePDF() {
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        onclone: function (clonedDoc) {
+          // Captura sin animaciones ni transparencias para que el PDF salga con colores completos
+          const style = clonedDoc.createElement('style');
+          style.textContent = '*, *::before, *::after { animation: none !important; transition: none !important; opacity: 1 !important; }';
+          clonedDoc.head.appendChild(style);
+        }
       }).then(canvas => {
         try {
           // Get image data
-          const imgData = canvas.toDataURL('image/png');
+          const imgData = canvas.toDataURL('image/jpeg', 0.92);
           
           // Create PDF using jsPDF
           const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
@@ -1497,7 +1503,7 @@ function generatePDF() {
             if (position !== 0) {
               pdf.addPage();
             }
-            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
             heightLeft -= pageHeight;
             position -= pageHeight;
           }
