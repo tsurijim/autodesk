@@ -330,14 +330,20 @@
                 <div class="spinner"></div>
                 <p>Generando diagnóstico...</p>
             </div>
+
+            <div class="button-group" id="pdfGroup" style="display:none">
+                <button type="button" class="btn-submit" id="btnPdf">📄 Descargar Reporte PDF</button>
+            </div>
         </div>
     </div>
-    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         const form = document.getElementById('diagnosisForm');
         const alert = document.getElementById('alert');
         const loading = document.getElementById('loading');
-        
+        let lastDiagnosis = null;
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -397,7 +403,11 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    showAlert(`✅ Diagnóstico generado exitosamente. ID: ${result.diagnosisId}`, 'success');
+                    lastDiagnosis = result.diagnosis;
+                    showAlert(result.databaseStored
+                        ? `✅ Diagnóstico generado y guardado. ID: ${result.diagnosisId}`
+                        : '⚠️ Diagnóstico generado, pero NO se guardó en la base de datos.', result.databaseStored ? 'success' : 'error');
+                    document.getElementById('pdfGroup').style.display = 'flex';
                     form.reset();
                     setTimeout(() => {
                         form.style.display = 'block';
@@ -423,6 +433,70 @@
             setTimeout(() => {
                 alert.style.display = 'none';
             }, 5000);
+        }
+
+        document.getElementById('btnPdf').addEventListener('click', () => {
+            if (!lastDiagnosis || !window.jspdf) {
+                showAlert('No hay diagnóstico para exportar o la librería PDF no cargó', 'error');
+                return;
+            }
+            generatePdf(lastDiagnosis);
+        });
+
+        function generatePdf(d) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            const margin = 15;
+            const width = doc.internal.pageSize.getWidth() - margin * 2;
+            let y = margin;
+
+            const write = (text, size = 10, bold = false, gap = 5) => {
+                doc.setFont('helvetica', bold ? 'bold' : 'normal');
+                doc.setFontSize(size);
+                const lines = doc.splitTextToSize(String(text), width);
+                lines.forEach(line => {
+                    if (y > 280) { doc.addPage(); y = margin; }
+                    doc.text(line, margin, y);
+                    y += size * 0.45 + 1.5;
+                });
+                y += gap - 5 + 2;
+            };
+
+            write('Reporte de Diagnóstico Autodesk - IDI Method', 16, true, 10);
+            write(`Cliente: ${d.client.name} | Empresa: ${d.client.company}`, 10);
+            write(`Industria: ${d.client.industry} | Rol: ${d.client.role} | País: ${d.client.country}`, 10);
+            write(`Fecha: ${new Date(d.generatedAt).toLocaleDateString('es-MX')}`, 10, false, 8);
+
+            write('1. Madurez', 13, true);
+            write(`Nivel: ${d.maturityAssessment.level} (${d.maturityAssessment.score}/100)`);
+            write(d.executiveSummary.summary, 10, false, 8);
+
+            write('2. Retorno de inversión (estimado, por validar)', 13, true);
+            write(`Costo de implementación estimado: USD ${d.roi.estimatedImplementationCost.toLocaleString('en-US')}`);
+            write(`Beneficio anual estimado: USD ${d.roi.estimatedAnnualROI.toLocaleString('en-US')}`);
+            write(`Periodo de recuperación: ${d.roi.paybackPeriod} meses | ROI: ${d.roi.roiPercentage}%`, 10, false, 8);
+
+            write('3. Productos evaluados', 13, true);
+            write(d.productNames.join(', '), 10, false, 8);
+
+            write('4. Desafíos prioritarios', 13, true);
+            write(d.challengeNames.join(', '), 10, false, 8);
+
+            write('5. Recomendaciones', 13, true);
+            d.recommendations.forEach(r => {
+                write(`${r.id} - ${r.challenge} (prioridad ${r.priority}, plazo ${r.timeline})`, 10, true, 3);
+                r.actions.forEach(a => write(`• ${a}`, 10, false, 3));
+            });
+            y += 4;
+
+            write('6. Plan de implementación', 13, true);
+            d.implementationPlan.phases.forEach(p => {
+                write(`${p.phase} (${p.duration})`, 10, true, 3);
+                p.activities.forEach(a => write(`• ${a}`, 10, false, 3));
+            });
+
+            const safe = (d.client.company || 'diagnostico').replace(/[^a-z0-9]+/gi, '_');
+            doc.save(`diagnostico_${safe}.pdf`);
         }
     </script>
 </body>

@@ -1,60 +1,127 @@
-export const PRODUCTS = [
-  { id: 1, name: 'Revit', category: 'BIM', version: '2024' },
-  { id: 2, name: 'AutoCAD', category: 'CAD', version: '2024' },
-  { id: 3, name: 'Navisworks', category: 'Project Management', version: '2024' },
-  { id: 4, name: 'Fusion 360', category: 'Design', version: 'Latest' }
-];
+// Diagnosis Engine - Core business logic for Autodesk IDI diagnosis platform
+// This module handles the core diagnosis methodology and evaluation logic
 
-export const CHALLENGES = [
-  { id: 1, name: 'Data Integration', impact: 'High', severity: 'Critical' },
-  { id: 2, name: 'User Adoption', impact: 'Medium', severity: 'Important' },
-  { id: 3, name: 'Process Optimization', impact: 'High', severity: 'Critical' },
-  { id: 4, name: 'Workflow Automation', impact: 'Medium', severity: 'Important' },
-  { id: 5, name: 'Data Quality', impact: 'High', severity: 'Critical' }
-];
-
-function calculateScore(responses) {
-  if (!responses || responses.length === 0) return 0;
-  const totalWeight = responses.reduce((sum, r) => sum + (r.weight || 1), 0);
-  const totalScore = responses.reduce((sum, r) => sum + ((r.value || 0) * (r.weight || 1)), 0);
-  return Math.round((totalScore / totalWeight) * 100) / 100;
-}
-
-function generateRecommendations(score, responses) {
-  const recommendations = [];
-  if (score < 30) {
-    recommendations.push({
-      priority: 'Critical',
-      action: 'Implementar mejoras inmediatas en infraestructura',
-      timeline: 'Inmediato'
-    });
-  } else if (score < 60) {
-    recommendations.push({
-      priority: 'High',
-      action: 'Optimizar flujos de trabajo existentes',
-      timeline: '1-3 meses'
-    });
-  } else {
-    recommendations.push({
-      priority: 'Medium',
-      action: 'Mantener y monitorear mejoras actuales',
-      timeline: 'Continuo'
-    });
+class DiagnosisEngine {
+  constructor(database) {
+    this.database = database;
+    this.evaluationResults = {};
+    this.diagnosticQuestions = [];
   }
-  return recommendations;
+
+  /**
+   * Initialize the diagnosis engine with assessment data
+   */
+  async initialize() {
+    try {
+      // Load diagnostic questions from database
+      this.diagnosticQuestions = await this.loadDiagnosticQuestions();
+      console.log('DiagnosisEngine initialized successfully');
+      return true;
+    } catch (error) {
+      console.error('Error initializing DiagnosisEngine:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Load diagnostic questions from the database
+   */
+  async loadDiagnosticQuestions() {
+    try {
+      const query = 'SELECT * FROM diagnostic_questions ORDER BY question_order';
+      const questions = await this.database.query(query);
+      return questions;
+    } catch (error) {
+      console.error('Error loading diagnostic questions:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Process diagnosis responses and generate evaluation
+   */
+  async processDiagnosis(responses) {
+    try {
+      const evaluation = {
+        timestamp: new Date(),
+        responses: responses,
+        score: 0,
+        recommendations: []
+      };
+
+      // Calculate diagnosis score based on IDI methodology
+      evaluation.score = this.calculateDiagnosisScore(responses);
+      evaluation.recommendations = this.generateRecommendations(evaluation.score);
+
+      // Store evaluation results
+      this.evaluationResults = evaluation;
+
+      return evaluation;
+    } catch (error) {
+      console.error('Error processing diagnosis:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Calculate diagnosis score using IDI methodology
+   */
+  calculateDiagnosisScore(responses) {
+    if (!responses || Object.keys(responses).length === 0) {
+      return 0;
+    }
+
+    let totalScore = 0;
+    let responseCount = 0;
+
+    for (const [questionId, response] of Object.entries(responses)) {
+      if (response && typeof response.value === 'number') {
+        totalScore += response.value;
+        responseCount++;
+      }
+    }
+
+    return responseCount > 0 ? Math.round((totalScore / responseCount) * 100) / 100 : 0;
+  }
+
+  /**
+   * Generate recommendations based on diagnosis score
+   */
+  generateRecommendations(score) {
+    const recommendations = [];
+
+    if (score >= 80) {
+      recommendations.push('Excelent alignment with IDI methodology');
+      recommendations.push('Continue with current implementation strategy');
+    } else if (score >= 60) {
+      recommendations.push('Good alignment but opportunities for improvement');
+      recommendations.push('Review key methodology areas');
+    } else if (score >= 40) {
+      recommendations.push('Significant alignment gaps identified');
+      recommendations.push('Recommend implementing corrective actions');
+    } else {
+      recommendations.push('Critical gaps in methodology implementation');
+      recommendations.push('Immediate action required');
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Get evaluation results
+   */
+  getEvaluationResults() {
+    return this.evaluationResults;
+  }
+
+  /**
+   * Reset the engine
+   */
+  reset() {
+    this.evaluationResults = {};
+    this.diagnosticQuestions = [];
+  }
 }
 
-export async function generateDiagnosis(userId, responses) {
-  const score = calculateScore(responses);
-  const recommendations = generateRecommendations(score, responses);
-  try {
-    const db = (await import('./db.js')).default;
-    await db.query(
-      'INSERT INTO diagnosis_results (user_id, score, recommendations, created_at) VALUES (?, ?, ?, NOW())',
-      [userId, score, JSON.stringify(recommendations)]
-    );
-  } catch (err) {
-    console.error('Error saving diagnosis:', err);
-  }
-  return { score, recommendations };
-}
+// Export for use in server.js
+module.exports = DiagnosisEngine;
