@@ -1260,6 +1260,7 @@
     <div class="summary-box">
       <h4 class="summary-title">Resumen Ejecutivo - Ciclo de Vida Completo</h4>
       <p class="summary-text" id="executive-summary"></p>
+      <div id="roi-justification"></div>
     </div>
 
     <!-- DESCARGA DE REPORTE -->
@@ -1395,6 +1396,48 @@ function generatePhases() {
 function generateExecutiveSummary(org, score, roi) {
   const text = `Gracias por completar el diagnóstico, esto nos ayuda a identificar un plan de acción para todos los involucrados en el éxito de tus proyectos`;
   document.getElementById('executive-summary').textContent = text;
+
+  // Justificación de madurez, ROI y licencias (se incluye en el PDF)
+  const countChecked = function (name) {
+    return document.querySelectorAll('input[name="' + name + '"]:checked').length;
+  };
+  const checks = ['pre-project', 'design', 'execution', 'post-project'].reduce(function (sum, n) { return sum + countChecked(n); }, 0);
+  const priorities = countChecked('priorities');
+  const fmt = function (n) { return '$' + Math.round(n).toLocaleString('es-MX'); };
+  const base = 8000 + priorities * 2000;
+  const labels = { 'pre-project': 'Pre-proyecto', 'design': 'Diseño', 'execution': 'Preconstrucción y ejecución', 'post-project': 'Post-proyecto' };
+  const usersByPhase = {};
+  let creatorsTotal = 0, consumersTotal = 0;
+  Object.keys(labels).forEach(function (phase) {
+    const read = function (role) {
+      const el = document.querySelector('input[data-phase="' + phase + '"][data-role="' + role + '"]');
+      return el ? Math.max(0, Math.floor(Number(el.value) || 0)) : 0;
+    };
+    usersByPhase[phase] = { creators: read('creators'), consumers: read('consumers') };
+    creatorsTotal += usersByPhase[phase].creators;
+    consumersTotal += usersByPhase[phase].consumers;
+  });
+  const phaseDetail = Object.keys(labels).map(function (phase) {
+    return labels[phase] + ': ' + usersByPhase[phase].creators + ' generan / ' + usersByPhase[phase].consumers + ' consultan';
+  }).join('; ');
+
+  const paragraphs = [
+    'Justificación de la madurez: se marcaron ' + checks + ' de 16 prácticas en las cuatro fases del ciclo de vida (pre-proyecto, diseño, preconstrucción y ejecución, y post-proyecto). Ese conteo entre 16 da una madurez de ' + score + '%. Mide qué parte del ciclo ya está cubierta con procesos y herramientas; a mayor cobertura, mayor madurez.',
+    'Justificación del ROI: el potencial se calcula como (8,000 + 2,000 × prioridades) × madurez. Con ' + priorities + ' prioridades de negocio seleccionadas, la base es ' + fmt(base) + ' y, al aplicar la madurez de ' + score + '%, resulta en ' + fmt(roi) + '. Es un indicador de referencia para priorizar la inversión, no un retorno financiero validado; sus importes deben confirmarse con el consultor.',
+    'Usuarios y licencias: ' + creatorsTotal + ' personas generan información (licencia de edición) y ' + consumersTotal + ' solo la consultan (licencia de consulta). Por fase: ' + phaseDetail + '. Este dato servirá para ajustar el ROI cuando se definan los precios de cada tipo de licencia.'
+  ];
+
+  const box = document.getElementById('roi-justification');
+  if (box) {
+    box.innerHTML = '';
+    paragraphs.forEach(function (t) {
+      const p = document.createElement('p');
+      p.className = 'summary-text';
+      p.style.marginTop = '12px';
+      p.textContent = t;
+      box.appendChild(p);
+    });
+  }
 }
 
 // ----- Guardado de respuestas por fase -----
