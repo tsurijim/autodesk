@@ -8,6 +8,9 @@ import {
   createClient,
   saveDiagnosis,
   saveLifecycleDiagnosis,
+  listLifecycleDiagnoses,
+  getLifecycleDiagnosis,
+  getLifecycleOptionStats,
   getDiagnosis,
   listDiagnoses,
   closeDatabase
@@ -377,6 +380,58 @@ app.post('/api/lifecycle-diagnoses', async (req, res) => {
       return res.status(503).json({ error: 'Base de datos no disponible', code: 'DB_UNAVAILABLE' });
     }
     res.status(500).json({ error: 'No se pudo guardar el diagnóstico', code: 'SAVE_FAILED' });
+  }
+});
+
+// =====================================================
+// CONSULTA DE DIAGNÓSTICOS POR CICLO DE VIDA (requiere token)
+// =====================================================
+function requireConsultaToken(req, res, next) {
+  const expected = process.env.CONSULTA_TOKEN;
+  if (!expected) {
+    return res.status(503).json({ error: 'CONSULTA_TOKEN no está configurado en el servidor', code: 'TOKEN_NOT_CONFIGURED' });
+  }
+  if ((req.get('x-consulta-token') || '') !== expected) {
+    return res.status(401).json({ error: 'Token inválido', code: 'UNAUTHORIZED' });
+  }
+  next();
+}
+
+app.get('/api/lifecycle-diagnoses', requireConsultaToken, async (req, res) => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 200);
+    const diagnoses = await listLifecycleDiagnoses(limit);
+    res.json({ success: true, diagnoses });
+  } catch (error) {
+    console.error('[LIFECYCLE_QUERY_ERROR]', error.message);
+    res.status(500).json({ error: 'No se pudo consultar los diagnósticos', code: 'QUERY_FAILED' });
+  }
+});
+
+app.get('/api/lifecycle-diagnoses/:id', requireConsultaToken, async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'ID inválido', code: 'INVALID_INPUT' });
+    }
+    const diagnosis = await getLifecycleDiagnosis(id);
+    if (!diagnosis) {
+      return res.status(404).json({ error: 'Diagnóstico no encontrado', code: 'NOT_FOUND' });
+    }
+    res.json({ success: true, diagnosis });
+  } catch (error) {
+    console.error('[LIFECYCLE_QUERY_ERROR]', error.message);
+    res.status(500).json({ error: 'No se pudo consultar el diagnóstico', code: 'QUERY_FAILED' });
+  }
+});
+
+app.get('/api/lifecycle-stats', requireConsultaToken, async (req, res) => {
+  try {
+    const stats = await getLifecycleOptionStats();
+    res.json({ success: true, ...stats });
+  } catch (error) {
+    console.error('[LIFECYCLE_QUERY_ERROR]', error.message);
+    res.status(500).json({ error: 'No se pudo calcular el resumen', code: 'QUERY_FAILED' });
   }
 });
 

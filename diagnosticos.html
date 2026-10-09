@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consulta de Diagnósticos Autodesk</title>
+<style>
+  :root { --bg:#f5f6f8; --fg:#1d1f23; --muted:#5f6670; --card:#ffffff; --line:#dde1e6; --accent:#0696d7; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family: Arial, Helvetica, sans-serif; font-size:14px; }
+  .wrap { max-width:1100px; margin:0 auto; padding:24px 16px; }
+  h1 { font-size:22px; margin:0 0 4px; }
+  h2 { font-size:17px; margin:0 0 12px; }
+  .sub { color:var(--muted); margin-bottom:20px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:18px; margin-bottom:20px; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  input[type=password] { padding:8px 10px; border:1px solid var(--line); border-radius:6px; min-width:240px; flex:1; }
+  button { padding:8px 14px; border:0; border-radius:6px; background:var(--accent); color:#fff; cursor:pointer; font-weight:bold; }
+  button.secondary { background:#e8ecf0; color:var(--fg); }
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:bold; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+  tr.clickable { cursor:pointer; }
+  tr.clickable:hover { background:#f0f7fb; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+  .kpi { border:1px solid var(--line); border-radius:8px; padding:12px; background:var(--card); }
+  .kpi .v { font-size:22px; font-weight:bold; }
+  .kpi .l { color:var(--muted); font-size:12px; }
+  .phase { margin-top:14px; }
+  .phase h3 { font-size:14px; margin:0 0 6px; }
+  .chip { display:inline-block; background:#e8f4fb; color:#0b4f73; border-radius:12px; padding:3px 9px; margin:2px 4px 2px 0; font-size:12px; }
+  .msg { color:var(--muted); padding:8px 0; }
+  .err { color:#c62828; padding:8px 0; }
+  .hidden { display:none; }
+  .bar { height:8px; background:#e8ecf0; border-radius:4px; overflow:hidden; min-width:80px; }
+  .bar > span { display:block; height:100%; background:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Consulta de diagnósticos</h1>
+  <div class="sub">Plataforma de Diagnóstico Autodesk · Ciclo de vida</div>
+
+  <div class="card" id="authCard">
+    <h2>Acceso</h2>
+    <div class="row">
+      <input type="password" id="token" placeholder="Token de consulta" autocomplete="off">
+      <button id="btnLogin">Entrar</button>
+    </div>
+    <div class="msg" id="authMsg">Ingresa el token de consulta para ver los diagnósticos.</div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="card">
+      <h2>Resumen general</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="v" id="kTotal">-</div><div class="l">Diagnósticos guardados</div></div>
+        <div class="kpi"><div class="v" id="kMat">-</div><div class="l">Madurez promedio</div></div>
+        <div class="kpi"><div class="v" id="kRoi">-</div><div class="l">ROI potencial promedio</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px">
+        <h2 style="margin:0">Diagnósticos por organización</h2>
+        <button class="secondary" id="btnReload">Actualizar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Organización</th><th>Sector</th><th>Madurez</th><th>ROI</th><th>Respuestas</th><th>Fecha</th></tr></thead>
+          <tbody id="listBody"></tbody>
+        </table>
+      </div>
+      <div class="msg" id="listMsg"></div>
+    </div>
+
+    <div class="card hidden" id="detailCard">
+      <h2 id="detailTitle"></h2>
+      <div id="detailBody"></div>
+    </div>
+
+    <div class="card">
+      <h2>Opciones marcadas por fase</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Fase</th><th>Opción</th><th>Organizaciones</th><th>% del total</th><th style="width:25%">Proporción</th></tr></thead>
+          <tbody id="optBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var PHASES = { 'pre-project': 'Pre-proyecto', 'design': 'Diseño', 'execution': 'Precon/Ejecución', 'post-project': 'Post-proyecto', 'priorities': 'Prioridades' };
+  var token = '';
+  try { token = sessionStorage.getItem('consultaToken') || ''; } catch (e) {}
+
+  function esc(v) {
+    return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function fmtMoney(v) { return '$' + Math.round(Number(v) || 0).toLocaleString('es-MX'); }
+  function fmtDate(v) { return v ? new Date(v).toLocaleString('es-MX') : ''; }
+
+  function api(path) {
+    return fetch(path, { headers: { 'x-consulta-token': token } }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        if (!r.ok) { var err = new Error(data.error || ('Error ' + r.status)); err.status = r.status; throw err; }
+        return data;
+      });
+    });
+  }
+
+  function showApp() {
+    document.getElementById('authCard').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    loadAll();
+  }
+
+  function login() {
+    token = document.getElementById('token').value.trim();
+    if (!token) return;
+    api('/api/lifecycle-stats').then(function () {
+      try { sessionStorage.setItem('consultaToken', token); } catch (e) {}
+      showApp();
+    }).catch(function (e) {
+      document.getElementById('authMsg').className = 'err';
+      document.getElementById('authMsg').textContent = e.status === 401 ? 'Token incorrecto.' : e.message;
+    });
+  }
+
+  function loadAll() { loadStats(); loadList(); }
+
+  function loadStats() {
+    api('/api/lifecycle-stats').then(function (d) {
+      var t = d.totals || {};
+      document.getElementById('kTotal').textContent = t.diagnoses || 0;
+      document.getElementById('kMat').textContent = Math.round(Number(t.avg_maturity) || 0) + '%';
+      document.getElementById('kRoi').textContent = fmtMoney(t.avg_roi);
+      var total = Number(t.diagnoses) || 0;
+      var rows = (d.options || []).map(function (o) {
+        var pct = total ? Math.round((o.organizations / total) * 100) : 0;
+        return '<tr><td>' + esc(PHASES[o.phase_key] || o.phase_key) + '</td><td>' + esc(o.option_key) +
+          '</td><td>' + o.organizations + '</td><td>' + pct + '%</td><td><div class="bar"><span style="width:' + pct + '%"></span></div></td></tr>';
+      });
+      document.getElementById('optBody').innerHTML = rows.join('') || '<tr><td colspan="5" class="msg">Sin datos todavía.</td></tr>';
+    }).catch(showError);
+  }
+
+  function loadList() {
+    document.getElementById('listMsg').className = 'msg';
+    document.getElementById('listMsg').textContent = 'Cargando...';
+    api('/api/lifecycle-diagnoses?limit=100').then(function (d) {
+      var list = d.diagnoses || [];
+      document.getElementById('listMsg').textContent = list.length ? 'Haz clic en una fila para ver el detalle.' : 'Todavía no hay diagnósticos guardados.';
+      document.getElementById('listBody').innerHTML = list.map(function (x) {
+        return '<tr class="clickable" data-id="' + x.id + '"><td>' + x.id + '</td><td>' + esc(x.organization_name) +
+          '</td><td>' + esc(x.industry || '-') + '</td><td>' + x.maturity_score + '%</td><td>' + fmtMoney(x.roi_potential) +
+          '</td><td>' + x.answers + '</td><td>' + esc(fmtDate(x.created_at)) + '</td></tr>';
+      }).join('');
+    }).catch(showError);
+  }
+
+  function showDetail(id) {
+    api('/api/lifecycle-diagnoses/' + encodeURIComponent(id)).then(function (d) {
+      var x = d.diagnosis;
+      document.getElementById('detailCard').classList.remove('hidden');
+      document.getElementById('detailTitle').textContent = 'Diagnóstico #' + x.id + ' · ' + x.organization_name;
+      var byPhase = {};
+      (x.answers || []).forEach(function (a) { (byPhase[a.phase_key] = byPhase[a.phase_key] || []).push(a.option_key); });
+      var phasesHtml = Object.keys(PHASES).map(function (k) {
+        var opts = byPhase[k] || [];
+        return '<div class="phase"><h3>' + esc(PHASES[k]) + ' (' + opts.length + ')</h3>' +
+          (opts.length ? opts.map(function (o) { return '<span class="chip">' + esc(o) + '</span>'; }).join('') : '<span class="msg">Sin opciones marcadas</span>') + '</div>';
+      }).join('');
+      document.getElementById('detailBody').innerHTML =
+        '<p><b>Sector:</b> ' + esc(x.industry || '-') + ' &nbsp; <b>Tamaño:</b> ' + esc(x.org_size || '-') +
+        ' &nbsp; <b>Contacto:</b> ' + esc(x.contact_email || '-') + '</p>' +
+        '<p><b>Madurez:</b> ' + x.maturity_score + '% &nbsp; <b>ROI potencial:</b> ' + fmtMoney(x.roi_potential) +
+        ' &nbsp; <b>Fecha:</b> ' + esc(fmtDate(x.created_at)) + '</p>' + phasesHtml;
+      document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth' });
+    }).catch(showError);
+  }
+
+  function showError(e) {
+    if (e.status === 401) {
+      try { sessionStorage.removeItem('consultaToken'); } catch (err) {}
+      location.reload();
+      return;
+    }
+    document.getElementById('listMsg').className = 'err';
+    document.getElementById('listMsg').textContent = e.message;
+  }
+
+  document.getElementById('btnLogin').addEventListener('click', login);
+  document.getElementById('token').addEventListener('keydown', function (e) { if (e.key === 'Enter') login(); });
+  document.getElementById('btnReload').addEventListener('click', loadAll);
+  document.getElementById('listBody').addEventListener('click', function (e) {
+    var tr = e.target.closest('tr[data-id]');
+    if (tr) showDetail(tr.getAttribute('data-id'));
+  });
+
+  if (token) { showApp(); }
+})();
+</script>
+</body>
+</html>

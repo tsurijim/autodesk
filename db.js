@@ -537,6 +537,77 @@ export async function saveLifecycleDiagnosis(data) {
   }
 }
 
+/**
+ * Listar diagnósticos por ciclo de vida (sin el JSON completo)
+ */
+export async function listLifecycleDiagnoses(limit = 50) {
+  const conn = await getConnection();
+  try {
+    const [rows] = await conn.query(
+      `SELECT d.id, d.organization_name, d.industry, d.org_size, d.contact_email,
+              d.total_checks, d.maturity_score, d.roi_potential, d.created_at,
+              COUNT(a.id) AS answers
+         FROM lifecycle_diagnoses d
+         LEFT JOIN lifecycle_answers a ON a.diagnosis_id = d.id
+        GROUP BY d.id
+        ORDER BY d.id DESC
+        LIMIT ?`,
+      [Number(limit)]
+    );
+    return rows;
+  } finally {
+    conn.release();
+  }
+}
+
+/**
+ * Detalle de un diagnóstico por ciclo de vida con sus opciones marcadas
+ */
+export async function getLifecycleDiagnosis(id) {
+  const conn = await getConnection();
+  try {
+    const [rows] = await conn.query(
+      `SELECT id, organization_name, industry, org_size, contact_email,
+              total_checks, maturity_score, roi_potential, created_at
+         FROM lifecycle_diagnoses WHERE id = ?`,
+      [id]
+    );
+    if (rows.length === 0) return null;
+    const [answers] = await conn.query(
+      `SELECT phase_key, option_key FROM lifecycle_answers
+        WHERE diagnosis_id = ? ORDER BY phase_key, option_key`,
+      [id]
+    );
+    return { ...rows[0], answers };
+  } finally {
+    conn.release();
+  }
+}
+
+/**
+ * Resumen: totales y cuántas organizaciones marcó cada opción en cada fase
+ */
+export async function getLifecycleOptionStats() {
+  const conn = await getConnection();
+  try {
+    const [totalsRows] = await conn.query(
+      `SELECT COUNT(*) AS diagnoses,
+              AVG(maturity_score) AS avg_maturity,
+              AVG(roi_potential) AS avg_roi
+         FROM lifecycle_diagnoses`
+    );
+    const [options] = await conn.query(
+      `SELECT phase_key, option_key, COUNT(DISTINCT diagnosis_id) AS organizations
+         FROM lifecycle_answers
+        GROUP BY phase_key, option_key
+        ORDER BY phase_key, organizations DESC`
+    );
+    return { totals: totalsRows[0], options };
+  } finally {
+    conn.release();
+  }
+}
+
 export default {
   initializeDatabase,
   createClient,
@@ -551,5 +622,8 @@ export default {
   getMostUsedProducts,
   getDiagnosesByPeriod,
   saveLifecycleDiagnosis,
+  listLifecycleDiagnoses,
+  getLifecycleDiagnosis,
+  getLifecycleOptionStats,
   closeDatabase
 };
