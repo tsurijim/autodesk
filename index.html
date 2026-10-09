@@ -1439,6 +1439,61 @@ function generateExecutiveSummary(org, score, roi) {
       p.textContent = t;
       box.appendChild(p);
     });
+    if (window.AutodeskROI) {
+      const r = window.AutodeskROI.calcular(usersByPhase);
+      if (r.personas > 0) {
+        const h = document.createElement('p');
+        h.className = 'summary-text';
+        h.style.marginTop = '16px';
+        h.style.fontWeight = '600';
+        h.textContent = 'Licencias y equipo por perfil (precios sin IVA, equipo a 4 años)';
+        box.appendChild(h);
+        const tbl = document.createElement('table');
+        tbl.style.width = '100%';
+        tbl.style.borderCollapse = 'collapse';
+        tbl.style.fontSize = '12px';
+        tbl.style.marginTop = '8px';
+        const cols = ['Perfil', 'Licencia', 'Personas', 'Licencia y equipo por persona', 'Costo anual del perfil', 'Beneficio anual del perfil'];
+        const thead = document.createElement('tr');
+        cols.forEach(function (c) {
+          const th = document.createElement('th');
+          th.textContent = c;
+          th.style.textAlign = 'left';
+          th.style.borderBottom = '1px solid #999';
+          th.style.padding = '4px';
+          thead.appendChild(th);
+        });
+        tbl.appendChild(thead);
+        const money = function (n) { return 'MXN ' + Math.round(n).toLocaleString('es-MX'); };
+        r.perfiles.forEach(function (pf) {
+          const tr = document.createElement('tr');
+          const vals = [
+            pf.nombre + ' (equipo gama ' + pf.equipoGama + ')',
+            pf.productos,
+            String(pf.personas),
+            pf.personas ? money(pf.costoPersona) : '-',
+            money(pf.costoTotal),
+            money(pf.beneficioTotal)
+          ];
+          vals.forEach(function (v) {
+            const td = document.createElement('td');
+            td.textContent = v;
+            td.style.padding = '4px';
+            td.style.borderBottom = '1px solid #ddd';
+            td.style.verticalAlign = 'top';
+            tr.appendChild(td);
+          });
+          tbl.appendChild(tr);
+        });
+        box.appendChild(tbl);
+        const nota = document.createElement('p');
+        nota.className = 'summary-text';
+        nota.style.marginTop = '8px';
+        nota.style.fontSize = '11px';
+        nota.textContent = 'Cifras preliminares. Las personas por perfil provienen de este cuestionario; la licencia por persona se toma de la lista de precios de Autodesk México sin IVA. El beneficio usa el costo-hora cargado con el sueldo de referencia de 300,000 MXN.';
+        box.appendChild(nota);
+      }
+    }
   }
 }
 

@@ -42,7 +42,7 @@
     return total;
   }
 
-  function fmt(n) { return '$' + Math.round(n).toLocaleString('es-MX'); }
+  function fmt(n) { return 'MXN ' + Math.round(n).toLocaleString('es-MX'); }
 
   // users: { 'pre-project': {creators, consumers}, design: {...}, execution: {...}, 'post-project': {...} }
   function calcular(users) {
@@ -60,10 +60,10 @@
     var equipoBaja = s.equipoBaja / s.anosDepreciacion;
 
     var perfiles = [
-      { nombre: 'Generador pre-proyecto', personas: creadoresPre, licencia: PRECIOS.infraworks + PRECIOS.navisworks, equipo: equipoMedia, hora: costoHora },
-      { nombre: 'Generador diseño y ejecución', personas: creadoresDisenoEjec, licencia: PRECIOS.aec, equipo: equipoMedia, hora: costoHora },
-      { nombre: 'Generador post-proyecto', personas: creadoresPost, licencia: PRECIOS.bimCollaboratePro, equipo: equipoBaja, hora: costoHora },
-      { nombre: 'Consultor (solo consulta)', personas: consultores, licencia: PRECIOS.formaDataManagement, equipo: equipoBaja, hora: costoHoraConsultor }
+      { nombre: 'Generador pre-proyecto', personas: creadoresPre, productos: 'Forma Build Essentials + InfraWorks', licencia: PRECIOS.formaBuildEssentials + PRECIOS.infraworks, equipo: equipoMedia, equipoGama: 'media', hora: costoHora },
+      { nombre: 'Generador diseño y ejecución', personas: creadoresDisenoEjec, productos: 'AEC Collection', licencia: PRECIOS.aec, equipo: equipoMedia, equipoGama: 'media', hora: costoHora },
+      { nombre: 'Generador post-proyecto', personas: creadoresPost, productos: 'BIM Collaborate Pro (incluye Tandem)', licencia: PRECIOS.bimCollaboratePro, equipo: equipoBaja, equipoGama: 'baja', hora: costoHora },
+      { nombre: 'Consultor (solo consulta)', personas: consultores, productos: 'Forma Data Management', licencia: PRECIOS.formaDataManagement, equipo: equipoBaja, equipoGama: 'baja', hora: costoHoraConsultor }
     ];
 
     var personas = 0, costoAnual = 0, beneficioAnual = 0;
@@ -76,7 +76,11 @@
       beneficioAnual += beneficio;
       return {
         nombre: p.nombre,
+        productos: p.productos,
         personas: p.personas,
+        licenciaPersona: Math.round(p.licencia),
+        equipoPersona: Math.round(p.equipo),
+        equipoGama: p.equipoGama,
         costoPersona: Math.round(costoPersona),
         costoTotal: Math.round(costo),
         beneficioTotal: Math.round(beneficio),
