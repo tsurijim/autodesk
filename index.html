@@ -1147,7 +1147,7 @@
         <div class="metric-desc">Capacidad de procesos en ciclo completo</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">Potencial de ROI Anual</div>
+        <div class="metric-label">ROI neto anual estimado (USD)</div>
         <div class="metric-value" id="roi-potential">$0K</div>
         <div class="metric-desc">Impacto financiero estimado</div>
       </div>
@@ -1315,6 +1315,18 @@ function previousStep() {
   }
 }
 
+function getUsersByPhase() {
+  const out = {};
+  ['pre-project', 'design', 'execution', 'post-project'].forEach(function (phase) {
+    const read = function (role) {
+      const el = document.querySelector('input[data-phase="' + phase + '"][data-role="' + role + '"]');
+      return el ? Math.max(0, Math.floor(Number(el.value) || 0)) : 0;
+    };
+    out[phase] = { creators: read('creators'), consumers: read('consumers') };
+  });
+  return out;
+}
+
 function generateResults() {
   nextStep();
 
@@ -1327,16 +1339,19 @@ function generateResults() {
   const maturityScore = Math.round((totalChecks / 16) * 100);
 
   const priorities = Array.from(document.querySelectorAll('input[name="priorities"]:checked')).length;
-  const roiPotential = (8000 + (priorities * 2000)) * (maturityScore / 100);
+  const roiModel = window.AutodeskROI ? window.AutodeskROI.calcular(getUsersByPhase()) : null;
+  const roiNetoUSD = roiModel && roiModel.personas > 0 ? window.AutodeskROI.usd(roiModel.netoAnual) : 0;
 
   document.getElementById('maturity-score').textContent = maturityScore + '%';
-  document.getElementById('roi-potential').textContent = '$' + Math.round(roiPotential / 1000) + 'K';
+  document.getElementById('roi-potential').textContent = roiModel && roiModel.personas > 0
+    ? 'USD ' + (roiNetoUSD >= 1000 ? Math.round(roiNetoUSD / 1000) + 'K' : roiNetoUSD.toLocaleString('en-US'))
+    : 'Sin datos';
   document.getElementById('opportunities-count').textContent = Math.max(3, priorities);
 
   generatePerspectives(orgName, maturityScore, preProject, design, execution, postProject, priorities);
   generateRecommendations(preProject, design, execution, postProject);
   generatePhases();
-  generateExecutiveSummary(orgName, maturityScore, roiPotential);
+  generateExecutiveSummary(orgName, maturityScore, roiNetoUSD);
 }
 
 function generatePerspectives(orgName, score, pre, des, exe, post, priorities) {
@@ -1404,8 +1419,9 @@ function generateExecutiveSummary(org, score, roi) {
   };
   const checks = ['pre-project', 'design', 'execution', 'post-project'].reduce(function (sum, n) { return sum + countChecked(n); }, 0);
   const priorities = countChecked('priorities');
-  const fmt = function (n) { return '$' + Math.round(n).toLocaleString('es-MX'); };
-  const base = 8000 + priorities * 2000;
+  const fmt = function (n) { return 'USD ' + Math.round(n).toLocaleString('en-US'); };
+  const modelo = window.AutodeskROI ? window.AutodeskROI.calcular(getUsersByPhase()) : null;
+  const netoAnual = modelo ? window.AutodeskROI.usd(modelo.netoAnual) : 0;
   const labels = { 'pre-project': 'Pre-proyecto', 'design': 'Diseño', 'execution': 'Preconstrucción y ejecución', 'post-project': 'Post-proyecto' };
   const usersByPhase = {};
   let creatorsTotal = 0, consumersTotal = 0;
@@ -1424,7 +1440,7 @@ function generateExecutiveSummary(org, score, roi) {
 
   const paragraphs = [
     'Justificación de la madurez: se marcaron ' + checks + ' de 16 prácticas en las cuatro fases del ciclo de vida (pre-proyecto, diseño, preconstrucción y ejecución, y post-proyecto). Ese conteo entre 16 da una madurez de ' + score + '%. Mide qué parte del ciclo ya está cubierta con procesos y herramientas; a mayor cobertura, mayor madurez.',
-    'Justificación del ROI: el potencial se calcula como (8,000 + 2,000 × prioridades) × madurez. Con ' + priorities + ' prioridades de negocio seleccionadas, la base es ' + fmt(base) + ' y, al aplicar la madurez de ' + score + '%, resulta en ' + fmt(roi) + '. Es un indicador de referencia para priorizar la inversión, no un retorno financiero validado; sus importes deben confirmarse con el consultor.',
+    'ROI preliminar: el beneficio se calcula con costo-hora de usuario (sueldo de referencia de 300,000 MXN, cargas de 35 %, 2,000 horas al año) y las horas ahorradas que indique el consultor. El neto anual de ' + fmt(netoAnual) + ' resta el costo de licencias y equipo. Montos en USD con tipo de cambio de 19 MXN por USD. Es un indicador para priorizar la inversión, no un retorno financiero validado.',
     'Usuarios y licencias: ' + creatorsTotal + ' personas generan información (licencia de edición) y ' + consumersTotal + ' solo la consultan (licencia de consulta). Por fase: ' + phaseDetail + '.',
     (window.AutodeskROI ? 'Modelo de ROI preliminar: ' + window.AutodeskROI.resumenTexto(usersByPhase) + ' Este resultado es preliminar y requiere un análisis en conjunto con el cliente para validar el número de usuarios por perfil, los sueldos reales, el nivel de implementación y las prioridades a atender.' : '')
   ];
@@ -1446,7 +1462,7 @@ function generateExecutiveSummary(org, score, roi) {
         h.className = 'summary-text';
         h.style.marginTop = '16px';
         h.style.fontWeight = '600';
-        h.textContent = 'Licencias y equipo por perfil (precios sin IVA, equipo a 4 años)';
+        h.textContent = 'Inversión en licencias y equipo por perfil (USD, precios sin IVA, tipo de cambio 19 MXN, equipo a 4 años)';
         box.appendChild(h);
         const tbl = document.createElement('table');
         tbl.style.width = '100%';
@@ -1464,7 +1480,7 @@ function generateExecutiveSummary(org, score, roi) {
           thead.appendChild(th);
         });
         tbl.appendChild(thead);
-        const money = function (n) { return 'MXN ' + Math.round(n).toLocaleString('es-MX'); };
+        const money = function (n) { return 'USD ' + window.AutodeskROI.usd(n).toLocaleString('en-US'); };
         r.perfiles.forEach(function (pf) {
           const tr = document.createElement('tr');
           const vals = [
@@ -1485,12 +1501,29 @@ function generateExecutiveSummary(org, score, roi) {
           });
           tbl.appendChild(tr);
         });
+        const totalRow = document.createElement('tr');
+        const totalPersonas = r.perfiles.reduce(function (a, pf) { return a + pf.personas; }, 0);
+        ['Total', '', String(totalPersonas), '', money(r.costoAnual), money(r.beneficioAnual)].forEach(function (v, i) {
+          const td = document.createElement('td');
+          td.textContent = v;
+          td.style.padding = '4px';
+          td.style.fontWeight = '700';
+          td.style.borderTop = '1px solid #999';
+          if (i === 0 && !v) td.textContent = '';
+          totalRow.appendChild(td);
+        });
+        tbl.appendChild(totalRow);
         box.appendChild(tbl);
+        const inv = document.createElement('p');
+        inv.className = 'summary-text';
+        inv.style.marginTop = '8px';
+        inv.textContent = 'Inversión anual en licencias y equipo: ' + money(r.costoAnual) + '. Inversión en 3 años (sin incremento de precios): ' + money(r.costoAnual * 3) + '. Inversión inicial de implementación: 300,000 MXN (' + money(300000) + ') a 1,000,000 MXN (' + money(1000000) + ') según el alcance.';
+        box.appendChild(inv);
         const nota = document.createElement('p');
         nota.className = 'summary-text';
         nota.style.marginTop = '8px';
         nota.style.fontSize = '11px';
-        nota.textContent = 'Cifras preliminares. Las personas por perfil provienen de este cuestionario; la licencia por persona se toma de la lista de precios de Autodesk México sin IVA. El beneficio usa el costo-hora cargado con el sueldo de referencia de 300,000 MXN.';
+        nota.textContent = 'Cifras preliminares. Las personas por perfil provienen de este cuestionario; la licencia por persona se toma de la lista de precios de Autodesk México sin IVA. El beneficio usa el costo-hora cargado con el sueldo de referencia de 300,000 MXN. Requiere análisis en conjunto con el cliente para valorar prioridades.';
         box.appendChild(nota);
       }
     }

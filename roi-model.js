@@ -42,7 +42,11 @@
     return total;
   }
 
-  function fmt(n) { return 'MXN ' + Math.round(n).toLocaleString('es-MX'); }
+  var TIPO_CAMBIO = 19; // MXN por USD
+
+  function usd(mxn) { return Math.round((Number(mxn) || 0) / TIPO_CAMBIO); }
+
+  function fmt(n) { return 'USD ' + usd(n).toLocaleString('en-US'); }
 
   // users: { 'pre-project': {creators, consumers}, design: {...}, execution: {...}, 'post-project': {...} }
   function calcular(users) {
@@ -130,7 +134,7 @@
     return base + ' Según el nivel de implementación: ' + impl;
   }
 
-  var api = { SUPUESTOS: SUPUESTOS, PRECIOS: PRECIOS, NIVELES_IMPLEMENTACION: NIVELES_IMPLEMENTACION, calcular: calcular, resumenTexto: resumenTexto };
+  var api = { SUPUESTOS: SUPUESTOS, PRECIOS: PRECIOS, NIVELES_IMPLEMENTACION: NIVELES_IMPLEMENTACION, TIPO_CAMBIO: TIPO_CAMBIO, usd: usd, calcular: calcular, resumenTexto: resumenTexto };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.AutodeskROI = api;
 })(typeof window !== 'undefined' ? window : globalThis);
