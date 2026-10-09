@@ -28,6 +28,19 @@ CREATE TABLE IF NOT EXISTS lifecycle_answers (
   INDEX idx_diagnosis (diagnosis_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Usuarios por fase: cuántas personas generan información y cuántas solo la consultan.
+-- Sirve para estimar el tipo de licencia necesaria por fase.
+CREATE TABLE IF NOT EXISTS lifecycle_phase_users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  diagnosis_id INT NOT NULL,
+  phase_key VARCHAR(30) NOT NULL,
+  creators INT NOT NULL DEFAULT 0,
+  consumers INT NOT NULL DEFAULT 0,
+  CONSTRAINT fk_phase_users_diagnosis FOREIGN KEY (diagnosis_id)
+    REFERENCES lifecycle_diagnoses(id) ON DELETE CASCADE,
+  UNIQUE KEY uq_diagnosis_phase (diagnosis_id, phase_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Ejemplos de consulta:
 -- ¿Cuántas organizaciones marcaron "bim-workflow" en diseño?
 -- SELECT COUNT(DISTINCT diagnosis_id) FROM lifecycle_answers WHERE phase_key='design' AND option_key='bim-workflow';

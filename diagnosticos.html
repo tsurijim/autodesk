@@ -40,7 +40,8 @@
 <body>
 <div class="wrap">
   <h1>Consulta de diagnósticos</h1>
-  <div class="sub">Plataforma de Diagnóstico Autodesk · Ciclo de vida</div>
+  <div class="sub">Plataforma de Diagnóstico Autodesk · Ciclo de vida<br>
+    Esta información está en: <a href="https://orange-kangaroo-535890.hostingersite.com/diagnosticos.html">https://orange-kangaroo-535890.hostingersite.com/diagnosticos.html</a></div>
 
   <div class="card" id="authCard">
     <h2>Acceso</h2>
@@ -177,11 +178,18 @@
         return '<div class="phase"><h3>' + esc(PHASES[k]) + ' (' + opts.length + ')</h3>' +
           (opts.length ? opts.map(function (o) { return '<span class="chip">' + esc(o) + '</span>'; }).join('') : '<span class="msg">Sin opciones marcadas</span>') + '</div>';
       }).join('');
+      var usersHtml = '<div class="phase"><h3>Usuarios por fase (generan / solo consultan)</h3>' +
+        ((x.users || []).length
+          ? '<table><thead><tr><th>Fase</th><th>Generan información</th><th>Solo consultan</th></tr></thead><tbody>' +
+            x.users.map(function (u) {
+              return '<tr><td>' + esc(PHASES[u.phase_key] || u.phase_key) + '</td><td>' + esc(String(u.creators)) + '</td><td>' + esc(String(u.consumers)) + '</td></tr>';
+            }).join('') + '</tbody></table>'
+          : '<span class="msg">Sin datos de usuarios (diagnóstico anterior a este cambio)</span>') + '</div>';
       document.getElementById('detailBody').innerHTML =
         '<p><b>Sector:</b> ' + esc(x.industry || '-') + ' &nbsp; <b>Tamaño:</b> ' + esc(x.org_size || '-') +
         ' &nbsp; <b>Contacto:</b> ' + esc(x.contact_email || '-') + '</p>' +
         '<p><b>Madurez:</b> ' + x.maturity_score + '% &nbsp; <b>ROI potencial:</b> ' + fmtMoney(x.roi_potential) +
-        ' &nbsp; <b>Fecha:</b> ' + esc(fmtDate(x.created_at)) + '</p>' + phasesHtml;
+        ' &nbsp; <b>Fecha:</b> ' + esc(fmtDate(x.created_at)) + '</p>' + phasesHtml + usersHtml;
       document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth' });
     }).catch(showError);
   }

@@ -653,7 +653,8 @@
         display: block !important;
       }
     }
-  </style>
+    .user-input { width:90px; padding:6px; border:1px solid #c9ced6; border-radius:6px; font-size:14px; }
+</style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
@@ -1118,6 +1119,26 @@
         </label>
       </div>
 
+      <h3 class="rec-title" style="margin-top:28px">Usuarios por fase del ciclo de vida</h3>
+      <p class="section-subtitle">Indica cuántas personas participan en cada fase. Quienes generan información necesitan licencia de edición; quienes solo consultan pueden usar una licencia de consulta. Esto define el tipo de licencia y hace más real el ROI.</p>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="text-align:left;padding:8px 6px">Fase</th>
+              <th style="text-align:left;padding:8px 6px">Generan información</th>
+              <th style="text-align:left;padding:8px 6px">Solo consultan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 6px">Pre-proyecto</td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="pre-project" data-role="creators"></td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="pre-project" data-role="consumers"></td></tr>
+            <tr><td style="padding:8px 6px">Diseño</td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="design" data-role="creators"></td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="design" data-role="consumers"></td></tr>
+            <tr><td style="padding:8px 6px">Preconstrucción y ejecución</td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="execution" data-role="creators"></td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="execution" data-role="consumers"></td></tr>
+            <tr><td style="padding:8px 6px">Post-proyecto</td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="post-project" data-role="creators"></td><td style="padding:8px 6px"><input class="user-input" type="number" min="0" max="100000" step="1" value="0" data-phase="post-project" data-role="consumers"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <div class="button-group">
         <button type="button" class="btn-secondary" onclick="previousStep()">← Anterior</button>
         <button type="button" class="btn-primary" onclick="generateResults()">Generar Diagnóstico →</button>
@@ -1397,12 +1418,25 @@ function collectLifecyclePayload() {
     const el = document.getElementById(id);
     return el ? (el.value || '').trim() : '';
   };
+  const users = function (phase) {
+    const read = function (role) {
+      const el = document.querySelector('input[data-phase="' + phase + '"][data-role="' + role + '"]');
+      return el ? Math.max(0, Math.floor(Number(el.value) || 0)) : 0;
+    };
+    return { creators: read('creators'), consumers: read('consumers') };
+  };
   return {
     organization: {
       name: val('org-name'),
       industry: val('industry') || null,
       size: val('org-size') || null,
       contact: val('contact') || null
+    },
+    users: {
+      'pre-project': users('pre-project'),
+      'design': users('design'),
+      'execution': users('execution'),
+      'post-project': users('post-project')
     },
     phases: {
       'pre-project': checked('pre-project'),

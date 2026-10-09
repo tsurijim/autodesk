@@ -527,6 +527,15 @@ export async function saveLifecycleDiagnosis(data) {
         [rows]
       );
     }
+    const userRows = Object.entries(data.users || {}).map(
+      ([phase, u]) => [diagnosisId, phase, u.creators || 0, u.consumers || 0]
+    );
+    if (userRows.length > 0) {
+      await conn.query(
+        'INSERT INTO lifecycle_phase_users (diagnosis_id, phase_key, creators, consumers) VALUES ?',
+        [userRows]
+      );
+    }
     await conn.commit();
     return diagnosisId;
   } catch (error) {
@@ -578,7 +587,12 @@ export async function getLifecycleDiagnosis(id) {
         WHERE diagnosis_id = ? ORDER BY phase_key, option_key`,
       [id]
     );
-    return { ...rows[0], answers };
+    const [users] = await conn.query(
+      `SELECT phase_key, creators, consumers FROM lifecycle_phase_users
+        WHERE diagnosis_id = ? ORDER BY phase_key`,
+      [id]
+    );
+    return { ...rows[0], answers, users };
   } finally {
     conn.release();
   }

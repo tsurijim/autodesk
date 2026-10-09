@@ -358,6 +358,16 @@ app.post('/api/lifecycle-diagnoses', async (req, res) => {
     const priorities = phases['priorities'].length;
     const roiPotential = Math.round((8000 + priorities * 2000) * (maturityScore / 100));
 
+    const toCount = (v) => {
+      const n = Number(v);
+      return Number.isInteger(n) && n >= 0 ? Math.min(n, 100000) : 0;
+    };
+    const users = {};
+    for (const phase of ['pre-project', 'design', 'execution', 'post-project']) {
+      const u = (body.users && typeof body.users[phase] === 'object' && body.users[phase]) || {};
+      users[phase] = { creators: toCount(u.creators), consumers: toCount(u.consumers) };
+    }
+
     const data = {
       organization: {
         name,
@@ -366,6 +376,7 @@ app.post('/api/lifecycle-diagnoses', async (req, res) => {
         contact: typeof org.contact === 'string' ? org.contact.slice(0, 255) : null
       },
       phases,
+      users,
       totalChecks,
       maturityScore,
       roiPotential
