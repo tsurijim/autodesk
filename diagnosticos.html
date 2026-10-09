@@ -93,6 +93,7 @@
   </div>
 </div>
 
+<script src="roi-model.js"></script>
 <script>
 (function () {
   var PHASES = { 'pre-project': 'Pre-proyecto', 'design': 'Diseño', 'execution': 'Precon/Ejecución', 'post-project': 'Post-proyecto', 'priorities': 'Prioridades' };
@@ -185,11 +186,22 @@
               return '<tr><td>' + esc(PHASES[u.phase_key] || u.phase_key) + '</td><td>' + esc(String(u.creators)) + '</td><td>' + esc(String(u.consumers)) + '</td></tr>';
             }).join('') + '</tbody></table>'
           : '<span class="msg">Sin datos de usuarios (diagnóstico anterior a este cambio)</span>') + '</div>';
+      var usersObj = {};
+      (x.users || []).forEach(function (u) { usersObj[u.phase_key] = { creators: u.creators, consumers: u.consumers }; });
+      var roiHtml = '';
+      if (window.AutodeskROI) {
+        var roi = window.AutodeskROI.calcular(usersObj);
+        roiHtml = '<div class="phase"><h3>ROI preliminar (costo-hora de usuario)</h3>' +
+          (roi.personas === 0
+            ? '<span class="msg">Sin personas registradas; no se puede calcular.</span>'
+            : '<p>' + esc(window.AutodeskROI.resumenTexto(usersObj)) + '</p>') +
+          '<p class="msg"><b>Preliminar:</b> requiere análisis en conjunto con el cliente para valorar prioridades, validar usuarios por perfil, sueldos reales y nivel de implementación.</p></div>';
+      }
       document.getElementById('detailBody').innerHTML =
         '<p><b>Sector:</b> ' + esc(x.industry || '-') + ' &nbsp; <b>Tamaño:</b> ' + esc(x.org_size || '-') +
         ' &nbsp; <b>Contacto:</b> ' + esc(x.contact_email || '-') + '</p>' +
         '<p><b>Madurez:</b> ' + x.maturity_score + '% &nbsp; <b>ROI potencial:</b> ' + fmtMoney(x.roi_potential) +
-        ' &nbsp; <b>Fecha:</b> ' + esc(fmtDate(x.created_at)) + '</p>' + phasesHtml + usersHtml;
+        ' &nbsp; <b>Fecha:</b> ' + esc(fmtDate(x.created_at)) + '</p>' + phasesHtml + usersHtml + roiHtml;
       document.getElementById('detailCard').scrollIntoView({ behavior: 'smooth' });
     }).catch(showError);
   }

@@ -1278,7 +1278,8 @@
   </div>
 </div>
 
-<script>
+<script src="roi-model.js"></script>
+  <script>
 let currentStep = 1;
 const totalSteps = 7;
 
@@ -1424,13 +1425,14 @@ function generateExecutiveSummary(org, score, roi) {
   const paragraphs = [
     'Justificación de la madurez: se marcaron ' + checks + ' de 16 prácticas en las cuatro fases del ciclo de vida (pre-proyecto, diseño, preconstrucción y ejecución, y post-proyecto). Ese conteo entre 16 da una madurez de ' + score + '%. Mide qué parte del ciclo ya está cubierta con procesos y herramientas; a mayor cobertura, mayor madurez.',
     'Justificación del ROI: el potencial se calcula como (8,000 + 2,000 × prioridades) × madurez. Con ' + priorities + ' prioridades de negocio seleccionadas, la base es ' + fmt(base) + ' y, al aplicar la madurez de ' + score + '%, resulta en ' + fmt(roi) + '. Es un indicador de referencia para priorizar la inversión, no un retorno financiero validado; sus importes deben confirmarse con el consultor.',
-    'Usuarios y licencias: ' + creatorsTotal + ' personas generan información (licencia de edición) y ' + consumersTotal + ' solo la consultan (licencia de consulta). Por fase: ' + phaseDetail + '. Este dato servirá para ajustar el ROI cuando se definan los precios de cada tipo de licencia.'
+    'Usuarios y licencias: ' + creatorsTotal + ' personas generan información (licencia de edición) y ' + consumersTotal + ' solo la consultan (licencia de consulta). Por fase: ' + phaseDetail + '.',
+    (window.AutodeskROI ? 'Modelo de ROI preliminar: ' + window.AutodeskROI.resumenTexto(usersByPhase) + ' Este resultado es preliminar y requiere un análisis en conjunto con el cliente para validar el número de usuarios por perfil, los sueldos reales, el nivel de implementación y las prioridades a atender.' : '')
   ];
 
   const box = document.getElementById('roi-justification');
   if (box) {
     box.innerHTML = '';
-    paragraphs.forEach(function (t) {
+    paragraphs.filter(Boolean).forEach(function (t) {
       const p = document.createElement('p');
       p.className = 'summary-text';
       p.style.marginTop = '12px';
